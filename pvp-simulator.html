@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<title>Mafia City - Advanced Battle Simulator</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<style>
+body{background:#0f0f0f;color:#eee;font-family:Arial;padding:20px}
+h1{text-align:center;color:#f4c542}
+.container{max-width:1300px;margin:auto;background:#1a1a1a;padding:20px;border-radius:10px}
+.section{margin-bottom:25px}
+input,select{width:100%;padding:4px;margin-bottom:5px;border-radius:5px;border:none}
+button{padding:10px;background:#f4c542;border:none;font-weight:bold;cursor:pointer;border-radius:6px}
+.grid{display:grid;grid-template-columns:repeat(2,1fr);gap:15px}
+canvas{margin-top:20px;background:#222;padding:10px;border-radius:8px}
+.good{color:#4dff88}
+.medium{color:#ffaa00}
+.bad{color:#ff4d4d}
+h2{color:#ffcc00}
+</style>
+</head>
+<body>
+
+
+<h1>📅 ARCHIPEL CLAN MAFIA CITY</h1>
+
+<h2>🔥 Advanced PvP Simulator</h2>
+
+<nav>
+<ul style="text-decoration:none!important">
+<li style ="list-style:none"><h4>Menu</h4></li>
+<li><a href="index.html"style="color:white;text-decoration:none!important">⚔️ Archipel Stratégie/Aide</a></li>
+<li><a href="composition-troupe.html" style="color:white;text-decoration:none!important">⚔️ Composition de troupe</a></li>
+<li><a href="calcul-troupe-raid.html" style="color:white;text-decoration:none!important">⚔️ Composition de troupe raid</a></li>
+<li><a href="pvp-simulator.html" style="color:white;text-decoration:none!important">⚔️ comparatif PvP</a></li>
+</ul>
+</nav>
+
+<div class="container">
+
+<h2>👑 VOS TROUPES</h2>
+<div id="yourSide"></div>
+
+<h2>🎯 ENNEMI</h2>
+<div id="enemySide"></div>
+
+<h2>⚙ Paramètres</h2>
+<select id="mode">
+<option value="pvp">PvP Normal</option>
+<option value="cop">Cop Raid (PvE)</option>
+</select>
+
+<button onclick="calculate()">Simuler Combat</button>
+
+<div id="result"></div>
+
+<canvas id="powerChart"></canvas>
+<canvas id="lossChart"></canvas>
+
+</div>
+
+<script>
+
+const types=["biker","shooter","bulker","vehicle"];
+
+function buildInputs(containerId,prefix){
+let container=document.getElementById(containerId);
+types.forEach(t=>{
+container.innerHTML+=`
+<h3>${t.toUpperCase()}</h3>
+Nombre<input type="number" id="${prefix}_${t}_count" value="20000">
+ATK %<input type="number" id="${prefix}_${t}_atk" value="150">
+DEF %<input type="number" id="${prefix}_${t}_def" value="120">
+DMG %<input type="number" id="${prefix}_${t}_dmg" value="100">
+`;
+});
+}
+
+buildInputs("yourSide","you");
+buildInputs("enemySide","enemy");
+
+function basePower(count,atk,def,dmg,mode){
+let value=count*((1+atk/100)*1.2+(1+def/100)*1+(1+dmg/100)*1.3);
+let safety=mode==="cop"?0.95:0.90;
+return value*safety;
+}
+
+function counterBonus(attacker,defender){
+if(attacker==="biker" && defender==="shooter") return 1.12;
+if(attacker==="shooter" && defender==="vehicle") return 1.12;
+if(attacker==="vehicle" && defender==="bulker") return 1.12;
+if(attacker==="bulker" && defender==="biker") return 1.12;
+
+if(defender==="biker" && attacker==="shooter") return 0.92;
+if(defender==="shooter" && attacker==="vehicle") return 0.92;
+if(defender==="vehicle" && attacker==="bulker") return 0.92;
+if(defender==="bulker" && attacker==="biker") return 0.92;
+
+return 1;
+}
+
+let chart1,chart2;
+
+function calculate(){
+
+let mode=document.getElementById("mode").value;
+
+let yourTotal=0;
+let enemyTotal=0;
+
+let yourDetail={};
+let enemyDetail={};
+
+types.forEach(t=>{
+let yc=+document.getElementById(`you_${t}_count`).value;
+let ya=+document.getElementById(`you_${t}_atk`).value;
+let yd=+document.getElementById(`you_${t}_def`).value;
+let ym=+document.getElementById(`you_${t}_dmg`).value;
+
+let ec=+document.getElementById(`enemy_${t}_count`).value;
+let ea=+document.getElementById(`enemy_${t}_atk`).value;
+let ed=+document.getElementById(`enemy_${t}_def`).value;
+let em=+document.getElementById(`enemy_${t}_dmg`).value;
+
+yourDetail[t]=basePower(yc,ya,yd,ym,mode);
+enemyDetail[t]=basePower(ec,ea,ed,em,mode);
+
+yourTotal+=yourDetail[t];
+enemyTotal+=enemyDetail[t];
+});
+
+// application contre-type global simplifié
+let counterMultiplier=1;
+
+types.forEach(att=>{
+types.forEach(def=>{
+counterMultiplier*=counterBonus(att,def);
+});
+});
+
+yourTotal*=counterMultiplier;
+
+let ratio=yourTotal/enemyTotal;
+
+let result="";
+let lossYou=0;
+let lossEnemy=0;
+
+if(ratio>1.2){
+result="<span class='good'>Victoire probable solide</span>";
+lossYou=0.08; lossEnemy=0.35;
+}
+else if(ratio>1.05){
+result="<span class='medium'>Victoire serrée</span>";
+lossYou=0.18; lossEnemy=0.45;
+}
+else if(ratio>0.9){
+result="<span class='medium'>Combat risqué</span>";
+lossYou=0.35; lossEnemy=0.40;
+}
+else{
+result="<span class='bad'>Défaite probable</span>";
+lossYou=0.55; lossEnemy=0.20;
+}
+
+// prudence supplémentaire
+lossYou*=1.1;
+
+let totalTroopsYou=types.reduce((sum,t)=>sum+ +document.getElementById(`you_${t}_count`).value,0);
+let totalTroopsEnemy=types.reduce((sum,t)=>sum+ +document.getElementById(`enemy_${t}_count`).value,0);
+
+let estimatedLossYou=Math.round(totalTroopsYou*lossYou);
+let estimatedLossEnemy=Math.round(totalTroopsEnemy*lossEnemy);
+
+document.getElementById("result").innerHTML=
+"<h2>Votre puissance estimée : "+Math.round(yourTotal)+"</h2>"+
+"<h2>Puissance ennemie : "+Math.round(enemyTotal)+"</h2>"+
+result+
+"<br><br>Ratio : "+ratio.toFixed(2)+
+"<br><br>💀 Vos pertes estimées : "+estimatedLossYou+
+"<br>💀 Pertes ennemies estimées : "+estimatedLossEnemy+
+"<br><br>🧠 Conseil : maintenir 20-30% Bulker en PvP / Priorité Shooter en Cop Raid";
+
+if(chart1)chart1.destroy();
+chart1=new Chart(powerChart,{
+type:'bar',
+data:{
+labels:types,
+datasets:[
+{label:"Vous",data:Object.values(yourDetail),backgroundColor:"#44ff88"},
+{label:"Ennemi",data:Object.values(enemyDetail),backgroundColor:"#ff4444"}
+]
+}
+});
+
+if(chart2)chart2.destroy();
+chart2=new Chart(lossChart,{
+type:'doughnut',
+data:{
+labels:["Vos pertes","Pertes ennemies"],
+datasets:[{
+data:[estimatedLossYou,estimatedLossEnemy],
+backgroundColor:["#ffaa00","#ff4444"]
+}]
+}
+});
+
+}
+
+</script>
+
+</body>
+</html>

@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<title>Calculateur Avancé - Composition Raid</title>
+
+<style>
+body {
+    font-family: Arial, sans-serif;
+    background: linear-gradient(#0f0f0f,#1a1a1a);
+    color: #eee;
+    padding: 20px;
+}
+h1 {
+    text-align: center;
+    color: #f4c542;
+}
+.container {
+    background: #1e1e1e;
+    padding: 20px;
+    border-radius: 8px;
+    max-width: 900px;
+    margin: auto;
+}
+label {
+    display: block;
+    margin-top: 10px;
+}
+input, select {
+    width: 100%;
+    padding: 6px;
+    margin-top: 4px;
+    border-radius: 4px;
+    border: none;
+}
+button {
+    margin-top: 15px;
+    padding: 10px;
+    background: #f4c542;
+    border: none;
+    font-weight: bold;
+    cursor: pointer;
+    border-radius: 6px;
+}
+.result {
+    margin-top: 20px;
+    background: #111;
+    padding: 15px;
+    border-radius: 6px;
+}
+.good { color: #4dff88; }
+.medium { color: #ffaa00; }
+.bad { color: #ff4d4d; }
+.section-title {
+    margin-top:20px;
+    color:#ffcc00;
+}
+</style>
+</head>
+<body>
+
+
+<h1>📅 ARCHIPEL CLAN MAFIA CITY</h1>
+
+<h2>🔥 Calculateur Avancé Composition Raid</h2>
+
+<nav>
+<ul style="text-decoration:none!important">
+<li style ="list-style:none"><h4>Menu</h4></li>
+<li><a href="index.html"style="color:white;text-decoration:none!important">⚔️ Archipel Stratégie/Aide</a></li>
+<li><a href="composition-troupe.html" style="color:white;text-decoration:none!important">⚔️ Composition de troupe</a></li>
+<li><a href="calcul-troupe-raid.html" style="color:white;text-decoration:none!important">⚔️ Composition de troupe raid</a></li>
+<li><a href="pvp-simulator.html" style="color:white;text-decoration:none!important">⚔️ comparatif PvP</a></li>
+</ul>
+</nav>
+
+
+<p>Rapide check du jeu... on joue comme on aime, évidemment</p>
+
+
+<div class="container">
+
+<h2 class="section-title">📊 Nombre de Troupes</h2>
+
+<label>Bikers</label>
+<input type="number" id="biker" value="40000">
+
+<label>Shooters</label>
+<input type="number" id="shooter" value="30000">
+
+<label>Bulkers</label>
+<input type="number" id="bulker" value="20000">
+
+<label>Véhicules</label>
+<input type="number" id="vehicle" value="10000">
+
+<h2 class="section-title">📈 Vos Bonus (%)</h2>
+
+<label>Bonus ATK (%)</label>
+<input type="number" id="atkBonus" value="150">
+
+<label>Bonus DEF (%)</label>
+<input type="number" id="defBonus" value="120">
+
+<label>Bonus Dégâts (%)</label>
+<input type="number" id="dmgBonus" value="80">
+
+<label>Formation</label>
+<select id="formation">
+<option value="square">Square (Défense +10%)</option>
+<option value="wedge">Wedge (Attaque +10%)</option>
+</select>
+
+<button onclick="calculate()">Calculer Puissance</button>
+
+<div class="result" id="result"></div>
+
+</div>
+
+<script>
+
+function calculate() {
+
+let biker = parseFloat(document.getElementById("biker").value);
+let shooter = parseFloat(document.getElementById("shooter").value);
+let bulker = parseFloat(document.getElementById("bulker").value);
+let vehicle = parseFloat(document.getElementById("vehicle").value);
+
+let atkBonus = parseFloat(document.getElementById("atkBonus").value) / 100;
+let defBonus = parseFloat(document.getElementById("defBonus").value) / 100;
+let dmgBonus = parseFloat(document.getElementById("dmgBonus").value) / 100;
+
+let formation = document.getElementById("formation").value;
+
+// Stats de base (pondérations réalistes relatives)
+let stats = {
+    biker: {atk:1.2, def:0.9, dmg:1.1},
+    shooter: {atk:1.3, def:0.8, dmg:1.2},
+    bulker: {atk:0.8, def:1.4, dmg:0.7},
+    vehicle: {atk:1.5, def:1.0, dmg:1.3}
+};
+
+function computePower(count, type) {
+    return count * (
+        (stats[type].atk * (1 + atkBonus)) +
+        (stats[type].def * (1 + defBonus)) +
+        (stats[type].dmg * (1 + dmgBonus))
+    );
+}
+
+let bikerPower = computePower(biker, "biker");
+let shooterPower = computePower(shooter, "shooter");
+let bulkerPower = computePower(bulker, "bulker");
+let vehiclePower = computePower(vehicle, "vehicle");
+
+let totalPower = bikerPower + shooterPower + bulkerPower + vehiclePower;
+
+// Bonus formation
+if (formation === "wedge") {
+    totalPower *= 1.10;
+}
+if (formation === "square") {
+    totalPower *= 1.10;
+}
+
+// Analyse équilibre
+let totalTroops = biker + shooter + bulker + vehicle;
+let balance = "";
+
+let bulkerRatio = bulker / totalTroops;
+
+if (bulkerRatio < 0.15) {
+    balance = "❗ Défense faible (peu de bulkers)";
+}
+else if (bulkerRatio < 0.25) {
+    balance = "⚖️ Défense équilibrée";
+}
+else {
+    balance = "🛡️ Défense solide";
+}
+
+// Evaluation
+let evaluation = "";
+if (totalPower > 1000000) {
+    evaluation = "<span class='good'>🔥 Composition Très Puissante</span>";
+}
+else if (totalPower > 600000) {
+    evaluation = "<span class='medium'>⚡ Composition Correcte</span>";
+}
+else {
+    evaluation = "<span class='bad'>❗ Composition Faible</span>";
+}
+
+document.getElementById("result").innerHTML =
+"<h3>Résultat :</h3>" +
+"Puissance estimée : <strong>" + Math.round(totalPower) + "</strong><br><br>" +
+evaluation + "<br><br>" +
+"<strong>Analyse Défensive :</strong> " + balance + "<br><br>" +
+"<h4>Détail :</h4>" +
+"Bikers : " + Math.round(bikerPower) + "<br>" +
+"Shooters : " + Math.round(shooterPower) + "<br>" +
+"Bulkers : " + Math.round(bulkerPower) + "<br>" +
+"Véhicules : " + Math.round(vehiclePower);
+
+}
+
+</script>
+
+</body>
+</html>
