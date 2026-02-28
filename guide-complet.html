@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<title>Mafia City H5 - Événements Récurrents</title>
+
+<style>
+body {
+    font-family: Arial, sans-serif;
+    background: linear-gradient(#0f0f0f, #1c1c1c);
+    color: #e6e6e6;
+    margin: 0;
+    padding: 20px;
+}
+h1 {
+    color: #f4c542;
+    text-align: center;
+}
+.event {
+    background: #1a1a1a;
+    margin: 15px 0;
+    padding: 15px;
+    border-radius: 8px;
+    border-left: 5px solid #f4c542;
+}
+button {
+    background: #f4c542;
+    border: none;
+    padding: 8px 12px;
+    cursor: pointer;
+    font-weight: bold;
+    border-radius: 5px;
+}
+.details {
+    display: none;
+    margin-top: 10px;
+}
+.badge-risk-low {color:#4dff88;}
+.badge-risk-medium {color:#ffaa00;}
+.badge-risk-high {color:#ff4d4d;}
+table {
+    width:100%;
+    border-collapse:collapse;
+    margin-top:15px;
+}
+th,td {
+    border:1px solid #444;
+    padding:8px;
+}
+th {background:#222;color:#f4c542;}
+footer {
+    margin-top:30px;
+    text-align:center;
+    color:#777;
+}
+</style>
+
+<script>
+function toggle(id){
+    var x = document.getElementById(id);
+    if(x.style.display === "none"){
+        x.style.display = "block";
+    } else {
+        x.style.display = "none";
+    }
+}
+</script>
+
+</head>
+<body>
+
+
+<h1>📅 ARCHIPEL CLAN MAFIA CITY</h1>
+
+<h2>🔥 Mafia City H5 – Guide Complet des Événements de Clan</h2>
+
+<nav>
+<ul style="text-decoration:none!important">
+<li style ="list-style:none"><h4>Menu</h4></li>
+<li><a href="index.html"style="color:white;text-decoration:none!important">⚔️ Archipel Stratégie</a></li>
+<li><a href="guide-complet.html"style="color:white;text-decoration:none!important">⚔️ Aide guide</a></li>
+<li><a href="composition-troupe.html" style="color:white;text-decoration:none!important">⚔️ Composition de troupe</a></li>
+<li><a href="calcul-troupe-raid.html" style="color:white;text-decoration:none!important">⚔️ Composition de troupe raid</a></li>
+<li><a href="pvp-simulator.html" style="color:white;text-decoration:none!important">⚔️ comparatif PvP</a></li>
+</ul>
+</nav>
+
+<!-- RAID POLICIER -->
+<div class="event">
+<h2>🪖 Raid Policier (Cop Raid)</h2>
+<button onclick="toggle('raid')">Afficher / Masquer Détails</button>
+<div id="raid" class="details">
+
+<p><strong>Description :</strong> Vagues de policiers attaquent chaque membre (jusqu’à 24 vagues).</p>
+
+<p><strong>Objectif :</strong></p>
+<ul>
+<li>Tuer ≥ 50% des ennemis par vague</li>
+<li>Maximiser points individuels et clan</li>
+</ul>
+
+<p><strong>Récompenses :</strong> Or, points, classement Top 10, récompense clan.</p>
+
+<p><strong>Pertes :</strong> Oui – troupes définitivement perdues</p>
+<p><strong>Risque :</strong> <span class="badge-risk-medium">Faible à Modéré</span></p>
+
+<h4>Conseils Débutant :</h4>
+<ul>
+<li>Demander renfort avant vague 15+</li>
+<li>Ne pas retirer troupes trop tôt</li>
+</ul>
+
+<h4>Conseils Expert :</h4>
+<ul>
+<li>Optimiser composition défense (tank devant, DPS derrière)</li>
+<li>Synchroniser renforts massifs fin d’event</li>
+</ul>
+
+</div>
+</div>
+
+<!-- DAILY CRIME -->
+<div class="event">
+<h2>📈 Daily Crime Wave</h2>
+<button onclick="toggle('crime')">Afficher / Masquer Détails</button>
+<div id="crime" class="details">
+
+<p><strong>Description :</strong> Cycle hebdomadaire avec sous-objectifs quotidiens.</p>
+
+<p><strong>Objectif :</strong></p>
+<ul>
+<li>Accumuler points via construction, entraînement, PvP</li>
+</ul>
+
+<p><strong>Récompenses :</strong> Or, ressources, bonus classement.</p>
+
+<p><strong>Pertes :</strong> Non (sauf PvP volontaire)</p>
+<p><strong>Risque :</strong> <span class="badge-risk-low">Aucun</span></p>
+
+<h4>Conseil Expert :</h4>
+<p>Ne pas utiliser accélérateurs hors journée correspondante.</p>
+
+</div>
+</div>
+
+<!-- CASINO -->
+<div class="event">
+<h2>🎰 Conquête du Casino / Maroni Lab</h2>
+<button onclick="toggle('casino')">Afficher / Masquer Détails</button>
+<div id="casino" class="details">
+
+<p><strong>Description :</strong> Raid PvE contre bâtiment neutre puissant.</p>
+
+<p><strong>Objectif :</strong> Infliger max dégâts en raids successifs.</p>
+
+<p><strong>Récompenses :</strong> Bonus proportionnels aux dégâts infligés.</p>
+
+<p><strong>Pertes :</strong> Oui</p>
+<p><strong>Risque :</strong> <span class="badge-risk-high">Modéré à Élevé</span></p>
+
+<h4>Organisation :</h4>
+<ul>
+<li>R5 fixe horaire</li>
+<li>R4 lancent raids en boucle</li>
+<li>Membres toujours full marche</li>
+</ul>
+
+</div>
+</div>
+
+<!-- MAIRIE -->
+<div class="event">
+<h2>🏛️ Élection du Maire</h2>
+<button onclick="toggle('mairie')">Afficher / Masquer Détails</button>
+<div id="mairie" class="details">
+
+<p><strong>Description :</strong> Capture et défense bâtiment central (PvP massif).</p>
+
+<p><strong>Objectif :</strong> Tenir le bâtiment pendant durée imposée.</p>
+
+<p><strong>Récompenses :</strong> Buffs, bonus stratégiques, pouvoir décisionnel.</p>
+
+<p><strong>Pertes :</strong> Oui</p>
+<p><strong>Risque :</strong> <span class="badge-risk-high">Très Élevé</span></p>
+
+<h4>Conseils :</h4>
+<ul>
+<li>Boucliers avant event</li>
+<li>Rotation défense</li>
+<li>Débutants en soutien arrière</li>
+</ul>
+
+</div>
+</div>
+
+<!-- TABLE SUMMARY -->
+<h2>📊 Résumé des Risques</h2>
+<table>
+<tr>
+<th>Événement</th>
+<th>Pertes</th>
+<th>Niveau Risque</th>
+</tr>
+<tr><td>Raid Policier</td><td>Oui</td><td>Faible à Modéré</td></tr>
+<tr><td>Daily Crime Wave</td><td>Non</td><td>Aucun</td></tr>
+<tr><td>Casino</td><td>Oui</td><td>Modéré à Élevé</td></tr>
+<tr><td>Mairie</td><td>Oui</td><td>Très Élevé</td></tr>
+</table>
+
+<footer>
+Guide stratégique chef de clan 👑 – Version complète
+</footer>
+
+</body>
+</html>
