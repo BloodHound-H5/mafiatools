@@ -3,6 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <title>Calculateur Avancé - Composition Raid</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
 <style>
 body {
@@ -11,98 +12,72 @@ body {
     color: #eee;
     padding: 20px;
 }
-h1 {
-    text-align: center;
-    color: #f4c542;
-}
+h1 { text-align: center; color: #f4c542; }
 .container {
     background: #1e1e1e;
     padding: 20px;
     border-radius: 8px;
-    max-width: 900px;
+    max-width: 1100px;
     margin: auto;
 }
-label {
-    display: block;
-    margin-top: 10px;
-}
+label { display:block; margin-top:10px; }
 input, select {
-    width: 100%;
-    padding: 6px;
-    margin-top: 4px;
-    border-radius: 4px;
-    border: none;
+    width:100%; padding:6px; margin-top:4px;
+    border-radius:4px; border:none;
 }
 button {
-    margin-top: 15px;
-    padding: 10px;
-    background: #f4c542;
-    border: none;
-    font-weight: bold;
-    cursor: pointer;
-    border-radius: 6px;
+    margin-top:10px; padding:8px;
+    background:#f4c542; border:none;
+    font-weight:bold; cursor:pointer;
+    border-radius:6px;
 }
-.result {
-    margin-top: 20px;
-    background: #111;
-    padding: 15px;
-    border-radius: 6px;
+.result { margin-top:20px; background:#111; padding:15px; border-radius:6px; }
+.good { color:#4dff88; }
+.medium { color:#ffaa00; }
+.bad { color:#ff4d4d; }
+.section-title { margin-top:25px; color:#ffcc00; }
+.subtype-box {
+    background:#151515;
+    padding:10px;
+    border-radius:6px;
+    margin-top:10px;
 }
-.good { color: #4dff88; }
-.medium { color: #ffaa00; }
-.bad { color: #ff4d4d; }
-.section-title {
+canvas {
+    background:#222;
     margin-top:20px;
-    color:#ffcc00;
+    padding:10px;
+    border-radius:8px;
 }
 </style>
 </head>
 <body>
 
-
 <h1>📅 ARCHIPEL CLAN MAFIA CITY</h1>
-
 <h2>🔥 Calculateur Avancé Composition Raid</h2>
 
 <nav>
 <ul style="text-decoration:none!important">
-<li style ="list-style:none"><h4>Menu</h4></li>
-<li><a href="index.html"style="color:white;text-decoration:none!important">⚔️ Archipel Stratégie</a></li>
-<li><a href="guide-complet.html"style="color:white;text-decoration:none!important">⚔️ Aide guide</a></li>
+<li style="list-style:none"><h4>Menu</h4></li>
+<li><a href="index.html" style="color:white;text-decoration:none!important">⚔️ Archipel Stratégie</a></li>
+<li><a href="guide-complet.html" style="color:white;text-decoration:none!important">⚔️ Aide guide</a></li>
 <li><a href="composition-troupe.html" style="color:white;text-decoration:none!important">⚔️ Composition de troupe</a></li>
 <li><a href="calcul-troupe-raid.html" style="color:white;text-decoration:none!important">⚔️ Composition de troupe raid</a></li>
 <li><a href="pvp-simulator.html" style="color:white;text-decoration:none!important">⚔️ comparatif PvP</a></li>
 </ul>
 </nav>
 
-
 <p>Rapide check du jeu... on joue comme on aime, évidemment</p>
-
 
 <div class="container">
 
-<h2 class="section-title">📊 Nombre de Troupes</h2>
-
-<label>Bikers</label>
-<input type="number" id="biker" value="40000">
-
-<label>Shooters</label>
-<input type="number" id="shooter" value="30000">
-
-<label>Bulkers</label>
-<input type="number" id="bulker" value="20000">
-
-<label>Véhicules</label>
-<input type="number" id="vehicle" value="10000">
+<h2 class="section-title">📊 Troupes</h2>
+<div id="classesContainer"></div>
 
 <h2 class="section-title">📈 Vos Bonus (%)</h2>
-
 <label>Bonus ATK (%)</label>
 <input type="number" id="atkBonus" value="150">
-
 <label>Bonus DEF (%)</label>
 <input type="number" id="defBonus" value="120">
-
 <label>Bonus Dégâts (%)</label>
 <input type="number" id="dmgBonus" value="80">
 
@@ -116,96 +91,176 @@ button {
 
 <div class="result" id="result"></div>
 
+<canvas id="classChart"></canvas>
+<canvas id="powerChart"></canvas>
+
 </div>
 
 <script>
 
-function calculate() {
-
-let biker = parseFloat(document.getElementById("biker").value);
-let shooter = parseFloat(document.getElementById("shooter").value);
-let bulker = parseFloat(document.getElementById("bulker").value);
-let vehicle = parseFloat(document.getElementById("vehicle").value);
-
-let atkBonus = parseFloat(document.getElementById("atkBonus").value) / 100;
-let defBonus = parseFloat(document.getElementById("defBonus").value) / 100;
-let dmgBonus = parseFloat(document.getElementById("dmgBonus").value) / 100;
-
-let formation = document.getElementById("formation").value;
-
-// Stats de base (pondérations réalistes relatives)
-let stats = {
-    biker: {atk:1.2, def:0.9, dmg:1.1},
-    shooter: {atk:1.3, def:0.8, dmg:1.2},
-    bulker: {atk:0.8, def:1.4, dmg:0.7},
-    vehicle: {atk:1.5, def:1.0, dmg:1.3}
+const tierMult = {
+6:0.55,7:0.65,8:0.75,9:0.85,
+10:1.00,11:1.15,12:1.35,13:1.60
 };
 
-function computePower(count, type) {
-    return count * (
-        (stats[type].atk * (1 + atkBonus)) +
-        (stats[type].def * (1 + defBonus)) +
-        (stats[type].dmg * (1 + dmgBonus))
-    );
+const classes = {
+biker:["Motard","Pilote de moto"],
+shooter:["Tireur d'élite","Tireur automatique"],
+bulker:["Garde","Mercenaire"],
+vehicle:["Véhicule blindé","Véhicule modifié"]
+};
+
+function createClassUI() {
+const container=document.getElementById("classesContainer");
+
+for(let className in classes){
+
+let block=document.createElement("div");
+block.innerHTML=`<h3 class="section-title">${className.toUpperCase()}</h3>
+<div id="${className}_container"></div>
+<button onclick="addSubtype('${className}')">➕ Ajouter un type</button>`;
+container.appendChild(block);
+
+classes[className].forEach(type=>{
+addSubtype(className,type);
+});
+}
 }
 
-let bikerPower = computePower(biker, "biker");
-let shooterPower = computePower(shooter, "shooter");
-let bulkerPower = computePower(bulker, "bulker");
-let vehiclePower = computePower(vehicle, "vehicle");
+function addSubtype(className,forcedType=null){
 
-let totalPower = bikerPower + shooterPower + bulkerPower + vehiclePower;
+const subtypeContainer=document.getElementById(className+"_container");
 
-// Bonus formation
-if (formation === "wedge") {
-    totalPower *= 1.10;
-}
-if (formation === "square") {
-    totalPower *= 1.10;
-}
+let typeOptions=classes[className]
+.map(t=>`<option value="${t}">${t}</option>`).join("");
 
-// Analyse équilibre
-let totalTroops = biker + shooter + bulker + vehicle;
-let balance = "";
+let div=document.createElement("div");
+div.className="subtype-box";
 
-let bulkerRatio = bulker / totalTroops;
+div.innerHTML=`
+<label>Type</label>
+<select class="typeSelect">${typeOptions}</select>
+<label>Nombre</label>
+<input type="number" class="countInput" value="0">
+<label>Tier</label>
+<select class="tierSelect">
+<option value="6">T6</option>
+<option value="7">T7</option>
+<option value="8">T8</option>
+<option value="9">T9</option>
+<option value="10">T10</option>
+<option value="11">T11</option>
+<option value="12">T12</option>
+<option value="13">T13</option>
+</select>
+`;
 
-if (bulkerRatio < 0.15) {
-    balance = "❗ Défense faible (peu de bulkers)";
-}
-else if (bulkerRatio < 0.25) {
-    balance = "⚖️ Défense équilibrée";
-}
-else {
-    balance = "🛡️ Défense solide";
-}
+subtypeContainer.appendChild(div);
 
-// Evaluation
-let evaluation = "";
-if (totalPower > 1000000) {
-    evaluation = "<span class='good'>🔥 Composition Très Puissante</span>";
+if(forcedType){
+div.querySelector(".typeSelect").value=forcedType;
 }
-else if (totalPower > 600000) {
-    evaluation = "<span class='medium'>⚡ Composition Correcte</span>";
-}
-else {
-    evaluation = "<span class='bad'>❗ Composition Faible</span>";
 }
 
-document.getElementById("result").innerHTML =
-"<h3>Résultat :</h3>" +
-"Puissance estimée : <strong>" + Math.round(totalPower) + "</strong><br><br>" +
-evaluation + "<br><br>" +
-"<strong>Analyse Défensive :</strong> " + balance + "<br><br>" +
-"<h4>Détail :</h4>" +
-"Bikers : " + Math.round(bikerPower) + "<br>" +
-"Shooters : " + Math.round(shooterPower) + "<br>" +
-"Bulkers : " + Math.round(bulkerPower) + "<br>" +
-"Véhicules : " + Math.round(vehiclePower);
+let classChart,powerChart;
 
+function calculate(){
+
+let atk=+document.getElementById("atkBonus").value;
+let def=+document.getElementById("defBonus").value;
+let dmg=+document.getElementById("dmgBonus").value;
+let formation=document.getElementById("formation").value;
+
+let formationAtk=formation==="wedge"?1.10:1;
+let formationDef=formation==="square"?1.10:1;
+
+let classTotals={};
+let powerTotals={};
+let totalPower=0;
+
+for(let className in classes){
+
+let container=document.getElementById(className+"_container");
+let subtypes=container.querySelectorAll(".subtype-box");
+
+let classCount=0;
+let classPower=0;
+
+subtypes.forEach(box=>{
+let count=+box.querySelector(".countInput").value;
+let tier=+box.querySelector(".tierSelect").value;
+
+let weighted=
+((atk/100)*0.45*formationAtk)+
+((dmg/100)*0.35)+
+((def/100)*0.20*formationDef);
+
+let power=count*tierMult[tier]*(1+weighted);
+
+classCount+=count;
+classPower+=power;
+});
+
+classTotals[className]=classCount;
+powerTotals[className]=classPower;
+totalPower+=classPower;
 }
+
+let evaluation=
+totalPower>2000000?"<span class='good'>🔥 Composition Très Puissante</span>":
+totalPower>1000000?"<span class='medium'>⚡ Composition Correcte</span>":
+"<span class='bad'>❗ Composition Faible</span>";
+
+document.getElementById("result").innerHTML=
+"<h3>Puissance estimée : "+Math.round(totalPower)+"</h3>"+
+evaluation;
+
+updateCharts(classTotals,powerTotals);
+}
+
+function updateCharts(classTotals,powerTotals){
+
+const pieCanvas = document.getElementById("classChart");
+const barCanvas = document.getElementById("powerChart");
+
+if(classChart) classChart.destroy();
+classChart = new Chart(pieCanvas,{
+type:'pie',
+data:{
+labels:Object.keys(classTotals),
+datasets:[{
+data:Object.values(classTotals),
+backgroundColor:["#ff4444","#44aaff","#44ff88","#ffaa00"]
+}]
+},
+options:{
+plugins:{legend:{labels:{color:"#fff"}}}
+}
+});
+
+if(powerChart) powerChart.destroy();
+powerChart = new Chart(barCanvas,{
+type:'bar',
+data:{
+labels:Object.keys(powerTotals),
+datasets:[{
+label:"Puissance par classe",
+data:Object.values(powerTotals),
+backgroundColor:"#f4c542"
+}]
+},
+options:{
+scales:{
+x:{ticks:{color:"#fff"}},
+y:{ticks:{color:"#fff"}}
+},
+plugins:{legend:{labels:{color:"#fff"}}}
+}
+});
+}
+
+createClassUI();
 
 </script>
-
 </body>
 </html>
