@@ -3,7 +3,6 @@
 <head>
 <meta charset="UTF-8">
 <title>Ultimate Raid Calculator - Mafia City</title>
-
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
 <style>
@@ -13,250 +12,198 @@ body {
     color: #eee;
     padding: 20px;
 }
-h1 {
-    text-align:center;
-    color:#f4c542;
-}
+h1 { text-align:center; color:#f4c542; }
 .container {
-    max-width:1100px;
+    max-width:1200px;
     margin:auto;
     background:#1e1e1e;
     padding:20px;
     border-radius:10px;
 }
-.section {
-    margin-bottom:25px;
-}
-label {
-    display:block;
-    margin-top:6px;
-}
+.section-title { margin-top:25px; color:#ffcc00; }
 input, select {
-    width:100%;
-    padding:5px;
-    border-radius:5px;
-    border:none;
+    width:100%; padding:6px; margin-top:4px;
+    border-radius:5px; border:none;
 }
 button {
-    margin-top:15px;
-    padding:10px;
+    margin-top:10px;
+    padding:8px;
     background:#f4c542;
     border:none;
     font-weight:bold;
     cursor:pointer;
     border-radius:6px;
 }
-.result {
-    margin-top:20px;
-    background:#111;
-    padding:15px;
-    border-radius:6px;
-}
-.good {color:#4dff88;}
-.medium {color:#ffaa00;}
-.bad {color:#ff4d4d;}
-canvas {
-    background:#222;
+.subtype-box {
+    background:#151515;
     padding:10px;
     border-radius:6px;
+    margin-top:10px;
+}
+canvas {
+    background:#222;
     margin-top:20px;
+    padding:10px;
+    border-radius:8px;
 }
-.grid {
-    display:grid;
-    grid-template-columns:repeat(2,1fr);
-    gap:15px;
-}
+.good{color:#4dff88;}
+.medium{color:#ffaa00;}
+.bad{color:#ff4d4d;}
 </style>
 </head>
 <body>
 
 <h1>📅 ARCHIPEL CLAN MAFIA CITY</h1>
-
 <h2>🔥 Ultimate Composition Calculator</h2>
 
 <nav>
 <ul style="text-decoration:none!important">
-<li style ="list-style:none"><h4>Menu</h4></li>
-<li><a href="index.html"style="color:white;text-decoration:none!important">⚔️ Archipel Stratégie</a></li>
-<li><a href="guide-complet.html"style="color:white;text-decoration:none!important">⚔️ Aide guide</a></li>
+<li style="list-style:none"><h4>Menu</h4></li>
+<li><a href="index.html" style="color:white;text-decoration:none!important">⚔️ Archipel Stratégie</a></li>
+<li><a href="guide-complet.html" style="color:white;text-decoration:none!important">⚔️ Aide guide</a></li>
 <li><a href="composition-troupe.html" style="color:white;text-decoration:none!important">⚔️ Composition de troupe</a></li>
 <li><a href="calcul-troupe-raid.html" style="color:white;text-decoration:none!important">⚔️ Composition de troupe raid</a></li>
 <li><a href="pvp-simulator.html" style="color:white;text-decoration:none!important">⚔️ comparatif PvP</a></li>
 </ul>
 </nav>
 
-
-<p>Rapide check du jeu... on joue comme on aime, évidemment</p>
+<p>Analyse avancée de votre composition globale.</p>
 
 <div class="container">
 
-<div class="section">
-<h2>📊 Nombre de troupes</h2>
+<h2 class="section-title">📊 Troupes</h2>
+<div id="classesContainer"></div>
 
-<label>Bikers</label>
-<input type="number" id="biker" value="40000">
+<h2 class="section-title">📈 Bonus (%)</h2>
+<label>ATK</label><input type="number" id="atkBonus" value="150">
+<label>DEF</label><input type="number" id="defBonus" value="120">
+<label>DMG</label><input type="number" id="dmgBonus" value="80">
 
-<label>Shooters</label>
-<input type="number" id="shooter" value="30000">
+<button onclick="calculate()">Analyser</button>
 
-<label>Bulkers</label>
-<input type="number" id="bulker" value="20000">
+<div id="result"></div>
 
-<label>Véhicules</label>
-<input type="number" id="vehicle" value="10000">
-</div>
-
-<div class="section">
-<h2>📈 Stats par Type (%)</h2>
-
-<div class="grid">
-
-<div>
-<h3>🏍️ Biker</h3>
-<label>ATK</label><input type="number" id="bikerAtk" value="150">
-<label>DEF</label><input type="number" id="bikerDef" value="100">
-<label>Dégâts</label><input type="number" id="bikerDmg" value="80">
-</div>
-
-<div>
-<h3>🎯 Shooter</h3>
-<label>ATK</label><input type="number" id="shooterAtk" value="170">
-<label>DEF</label><input type="number" id="shooterDef" value="90">
-<label>Dégâts</label><input type="number" id="shooterDmg" value="100">
-</div>
-
-<div>
-<h3>🛡️ Bulker</h3>
-<label>ATK</label><input type="number" id="bulkerAtk" value="90">
-<label>DEF</label><input type="number" id="bulkerDef" value="180">
-<label>Dégâts</label><input type="number" id="bulkerDmg" value="60">
-</div>
-
-<div>
-<h3>🚓 Véhicule</h3>
-<label>ATK</label><input type="number" id="vehicleAtk" value="200">
-<label>DEF</label><input type="number" id="vehicleDef" value="120">
-<label>Dégâts</label><input type="number" id="vehicleDmg" value="140">
-</div>
-
-</div>
-
-<label style="margin-top:15px;">Formation</label>
-<select id="formation">
-<option value="square">Square (Défense +10%)</option>
-<option value="wedge">Wedge (Attaque +10%)</option>
-</select>
-
-<button onclick="calculate()">Calculer</button>
-
-<div class="result" id="result"></div>
-
-<canvas id="powerChart"></canvas>
-<canvas id="ratioChart"></canvas>
+<canvas id="pieChart"></canvas>
+<canvas id="barChart"></canvas>
+<canvas id="radarChart"></canvas>
 
 </div>
 
 <script>
 
-let chart1, chart2;
+const tierMult={6:0.55,7:0.65,8:0.75,9:0.85,10:1,11:1.15,12:1.35,13:1.6};
 
-function compute(count, atk, def, dmg) {
-    return count * ((1 + atk/100) * 1.2 +
-                    (1 + def/100) * 1.0 +
-                    (1 + dmg/100) * 1.3);
+const classes={
+biker:["Motard","Pilote de moto"],
+shooter:["Tireur d'élite","Tireur automatique"],
+bulker:["Garde","Mercenaire"],
+vehicle:["Véhicule blindé","Véhicule modifié"]
+};
+
+function createUI(){
+const container=document.getElementById("classesContainer");
+for(let c in classes){
+let block=document.createElement("div");
+block.innerHTML=`<h3 class="section-title">${c.toUpperCase()}</h3>
+<div id="${c}_container"></div>
+<button onclick="addSubtype('${c}')">➕ Ajouter</button>`;
+container.appendChild(block);
+classes[c].forEach(t=>addSubtype(c,t));
+}
 }
 
-function calculate() {
-
-let biker = parseFloat(document.getElementById("biker").value);
-let shooter = parseFloat(document.getElementById("shooter").value);
-let bulker = parseFloat(document.getElementById("bulker").value);
-let vehicle = parseFloat(document.getElementById("vehicle").value);
-
-let formation = document.getElementById("formation").value;
-
-// Récup stats
-let bikerPower = compute(biker,
-    parseFloat(bikerAtk.value),
-    parseFloat(bikerDef.value),
-    parseFloat(bikerDmg.value)
-);
-
-let shooterPower = compute(shooter,
-    parseFloat(shooterAtk.value),
-    parseFloat(shooterDef.value),
-    parseFloat(shooterDmg.value)
-);
-
-let bulkerPower = compute(bulker,
-    parseFloat(bulkerAtk.value),
-    parseFloat(bulkerDef.value),
-    parseFloat(bulkerDmg.value)
-);
-
-let vehiclePower = compute(vehicle,
-    parseFloat(vehicleAtk.value),
-    parseFloat(vehicleDef.value),
-    parseFloat(vehicleDmg.value)
-);
-
-let totalPower = bikerPower + shooterPower + bulkerPower + vehiclePower;
-
-// Bonus formation
-if (formation === "wedge") totalPower *= 1.10;
-if (formation === "square") totalPower *= 1.10;
-
-// Analyse
-let totalTroops = biker + shooter + bulker + vehicle;
-let bulkerRatio = bulker / totalTroops;
-
-let defenseAnalysis = bulkerRatio < 0.15 ?
-"❗ Défense fragile" :
-bulkerRatio < 0.25 ?
-"⚖️ Défense équilibrée" :
-"🛡️ Défense solide";
-
-let evaluation = totalPower > 2000000 ?
-"<span class='good'>🔥 Très Puissant</span>" :
-totalPower > 1000000 ?
-"<span class='medium'>⚡ Puissance Correcte</span>" :
-"<span class='bad'>❗ Puissance Faible</span>";
-
-document.getElementById("result").innerHTML =
-"<h3>Puissance Totale : " + Math.round(totalPower) + "</h3>" +
-evaluation + "<br><br>" +
-"<strong>Analyse Défensive :</strong> " + defenseAnalysis;
-
-// Graphique puissance
-if(chart1) chart1.destroy();
-chart1 = new Chart(document.getElementById("powerChart"), {
-type:'bar',
-data:{
-labels:["Biker","Shooter","Bulker","Véhicule"],
-datasets:[{
-label:"Puissance par Type",
-data:[bikerPower, shooterPower, bulkerPower, vehiclePower],
-backgroundColor:["#ff4444","#44aaff","#44ff88","#ffaa00"]
-}]
+function addSubtype(className,typeForced=null){
+const box=document.createElement("div");
+box.className="subtype-box";
+box.innerHTML=`
+<select class="typeSelect">
+${classes[className].map(t=>`<option>${t}</option>`).join("")}
+</select>
+<input type="number" class="countInput" placeholder="Nombre" value="0">
+<select class="tierSelect">
+<option value="6">T6</option><option value="7">T7</option>
+<option value="8">T8</option><option value="9">T9</option>
+<option value="10">T10</option><option value="11">T11</option>
+<option value="12">T12</option><option value="13">T13</option>
+</select>`;
+document.getElementById(className+"_container").appendChild(box);
+if(typeForced) box.querySelector(".typeSelect").value=typeForced;
 }
+
+let pieChart,barChart,radarChart;
+
+function calculate(){
+
+let atk=+atkBonus.value;
+let def=+defBonus.value;
+let dmg=+dmgBonus.value;
+
+let totals={},powers={},totalPower=0,totalCount=0;
+
+for(let c in classes){
+let sub=document.querySelectorAll(`#${c}_container .subtype-box`);
+let cCount=0,cPower=0;
+
+sub.forEach(box=>{
+let count=+box.querySelector(".countInput").value;
+let tier=+box.querySelector(".tierSelect").value;
+let weighted=((atk/100)*0.45)+((dmg/100)*0.35)+((def/100)*0.20);
+let power=count*tierMult[tier]*(1+weighted);
+cCount+=count;
+cPower+=power;
 });
 
-// Graphique ratio
-if(chart2) chart2.destroy();
-chart2 = new Chart(document.getElementById("ratioChart"), {
+totals[c]=cCount;
+powers[c]=cPower;
+totalPower+=cPower;
+totalCount+=cCount;
+}
+
+let ratioBulker=totals["bulker"]/totalCount;
+let advice=ratioBulker<0.2?"⚠️ Défense faible":
+ratioBulker<0.3?"⚖️ Défense correcte":"🛡️ Défense solide";
+
+document.getElementById("result").innerHTML=
+"<h3>Puissance Totale : "+Math.round(totalPower)+"</h3>"+advice;
+
+updateCharts(totals,powers,atk,def,dmg);
+}
+
+function updateCharts(totals,powers,atk,def,dmg){
+
+if(pieChart)pieChart.destroy();
+pieChart=new Chart(document.getElementById("pieChart"),{
 type:'pie',
+data:{labels:Object.keys(totals),
+datasets:[{data:Object.values(totals),
+backgroundColor:["#ff4444","#44aaff","#44ff88","#ffaa00"]}]}
+});
+
+if(barChart)barChart.destroy();
+barChart=new Chart(document.getElementById("barChart"),{
+type:'bar',
+data:{labels:Object.keys(powers),
+datasets:[{label:"Puissance",data:Object.values(powers),
+backgroundColor:"#f4c542"}]}
+});
+
+if(radarChart)radarChart.destroy();
+radarChart=new Chart(document.getElementById("radarChart"),{
+type:'radar',
 data:{
-labels:["Biker","Shooter","Bulker","Véhicule"],
+labels:["ATK","DEF","DMG"],
 datasets:[{
-data:[biker, shooter, bulker, vehicle],
-backgroundColor:["#ff4444","#44aaff","#44ff88","#ffaa00"]
+label:"Stat Balance",
+data:[atk,def,dmg],
+backgroundColor:"rgba(244,197,66,0.3)",
+borderColor:"#f4c542"
 }]
 }
 });
-
 }
+
+createUI();
 
 </script>
-
 </body>
 </html>
