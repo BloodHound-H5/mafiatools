@@ -9,205 +9,186 @@
 body{background:#0f0f0f;color:#eee;font-family:Arial;padding:20px}
 h1{text-align:center;color:#f4c542}
 .container{max-width:1300px;margin:auto;background:#1a1a1a;padding:20px;border-radius:10px}
-.section{margin-bottom:25px}
-input,select{width:100%;padding:4px;margin-bottom:5px;border-radius:5px;border:none}
-button{padding:10px;background:#f4c542;border:none;font-weight:bold;cursor:pointer;border-radius:6px}
-.grid{display:grid;grid-template-columns:repeat(2,1fr);gap:15px}
+.section-title{color:#ffcc00;margin-top:25px}
+input,select{width:100%;padding:6px;margin-top:4px;border-radius:5px;border:none}
+button{margin-top:10px;padding:8px;background:#f4c542;border:none;font-weight:bold;cursor:pointer;border-radius:6px}
+.subtype-box{background:#151515;padding:10px;border-radius:6px;margin-top:10px}
 canvas{margin-top:20px;background:#222;padding:10px;border-radius:8px}
 .good{color:#4dff88}
 .medium{color:#ffaa00}
 .bad{color:#ff4d4d}
-h2{color:#ffcc00}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:30px}
 </style>
 </head>
 <body>
 
-
 <h1>📅 ARCHIPEL CLAN MAFIA CITY</h1>
-
 <h2>🔥 Advanced PvP Simulator</h2>
-
-<nav>
-<ul style="text-decoration:none!important">
-<li style ="list-style:none"><h4>Menu</h4></li>
-<li><a href="index.html"style="color:white;text-decoration:none!important">⚔️ Archipel Stratégie</a></li>
-<li><a href="guide-complet.html"style="color:white;text-decoration:none!important">⚔️ Aide guide</a></li>
-<li><a href="composition-troupe.html" style="color:white;text-decoration:none!important">⚔️ Composition de troupe</a></li>
-<li><a href="calcul-troupe-raid.html" style="color:white;text-decoration:none!important">⚔️ Composition de troupe raid</a></li>
-<li><a href="pvp-simulator.html" style="color:white;text-decoration:none!important">⚔️ comparatif PvP</a></li>
-</ul>
-</nav>
 
 <div class="container">
 
-<h2>👑 VOS TROUPES</h2>
-<div id="yourSide"></div>
+<div class="grid">
 
-<h2>🎯 ENNEMI</h2>
-<div id="enemySide"></div>
+<div>
+<h2 class="section-title">👑 VOUS</h2>
+<div id="you_classes"></div>
+</div>
 
-<h2>⚙ Paramètres</h2>
-<select id="mode">
-<option value="pvp">PvP Normal</option>
-<option value="cop">Cop Raid (PvE)</option>
-</select>
+<div>
+<h2 class="section-title">🎯 ENNEMI</h2>
+<div id="enemy_classes"></div>
+</div>
 
-<button onclick="calculate()">Simuler Combat</button>
+</div>
+
+<button onclick="simulate()">Simuler Combat</button>
 
 <div id="result"></div>
 
-<canvas id="powerChart"></canvas>
-<canvas id="lossChart"></canvas>
+<canvas id="battleChart"></canvas>
 
 </div>
 
 <script>
 
-const types=["biker","shooter","bulker","vehicle"];
+const tierMult={6:0.55,7:0.65,8:0.75,9:0.85,10:1,11:1.15,12:1.35,13:1.6};
 
-function buildInputs(containerId,prefix){
-let container=document.getElementById(containerId);
-types.forEach(t=>{
-container.innerHTML+=`
-<h3>${t.toUpperCase()}</h3>
-Nombre<input type="number" id="${prefix}_${t}_count" value="20000">
-ATK %<input type="number" id="${prefix}_${t}_atk" value="150">
-DEF %<input type="number" id="${prefix}_${t}_def" value="120">
-DMG %<input type="number" id="${prefix}_${t}_dmg" value="100">
+const classes={
+biker:["Motard","Pilote de moto"],
+shooter:["Tireur d'élite","Tireur automatique"],
+bulker:["Garde","Mercenaire"],
+vehicle:["Véhicule blindé","Véhicule modifié"]
+};
+
+const counterMatrix={
+biker:{shooter:1.15,bulker:0.85,vehicle:1,biker:1},
+shooter:{vehicle:1.15,biker:0.85,bulker:1,shooter:1},
+vehicle:{bulker:1.15,shooter:0.85,biker:1,vehicle:1},
+bulker:{biker:1.15,vehicle:0.85,shooter:1,bulker:1}
+};
+
+function buildSide(prefix,containerId){
+
+const container=document.getElementById(containerId);
+
+for(let c in classes){
+
+let block=document.createElement("div");
+block.innerHTML=`<h3 class="section-title">${c.toUpperCase()}</h3>
+<div id="${prefix}_${c}_container"></div>
+<button onclick="addSubtype('${prefix}','${c}')">➕ Ajouter</button>`;
+container.appendChild(block);
+
+classes[c].forEach(t=>addSubtype(prefix,c,t));
+}
+}
+
+function addSubtype(prefix,className,typeForced=null){
+
+const container=document.getElementById(prefix+"_"+className+"_container");
+
+let div=document.createElement("div");
+div.className="subtype-box";
+
+div.innerHTML=`
+<label>Type</label>
+<select class="typeSelect">
+${classes[className].map(t=>`<option>${t}</option>`).join("")}
+</select>
+<label>Nombre</label>
+<input type="number" class="countInput" value="0">
+<label>Tier</label>
+<select class="tierSelect">
+<option value="6">T6</option><option value="7">T7</option>
+<option value="8">T8</option><option value="9">T9</option>
+<option value="10">T10</option><option value="11">T11</option>
+<option value="12">T12</option><option value="13">T13</option>
+</select>
 `;
+
+container.appendChild(div);
+
+if(typeForced){
+div.querySelector(".typeSelect").value=typeForced;
+}
+}
+
+let battleChart;
+
+function simulate(){
+
+let yourTotals={},enemyTotals={};
+
+for(let c in classes){
+yourTotals[c]=0;
+enemyTotals[c]=0;
+
+document.querySelectorAll(`#you_${c}_container .subtype-box`).forEach(box=>{
+let count=+box.querySelector(".countInput").value;
+let tier=+box.querySelector(".tierSelect").value;
+yourTotals[c]+=count*tierMult[tier];
+});
+
+document.querySelectorAll(`#enemy_${c}_container .subtype-box`).forEach(box=>{
+let count=+box.querySelector(".countInput").value;
+let tier=+box.querySelector(".tierSelect").value;
+enemyTotals[c]+=count*tierMult[tier];
 });
 }
 
-buildInputs("yourSide","you");
-buildInputs("enemySide","enemy");
+let totalEnemyAll=Object.values(enemyTotals).reduce((a,b)=>a+b,0);
 
-function basePower(count,atk,def,dmg,mode){
-let value=count*((1+atk/100)*1.2+(1+def/100)*1+(1+dmg/100)*1.3);
-let safety=mode==="cop"?0.95:0.90;
-return value*safety;
+let adjustedYourPower=0;
+let enemyPower=totalEnemyAll;
+
+for(let att in yourTotals){
+
+let counterEffect=0;
+
+for(let def in enemyTotals){
+
+let proportion=enemyTotals[def]/(totalEnemyAll||1);
+let multiplier=counterMatrix[att][def]||1;
+counterEffect+=proportion*(multiplier-1);
 }
 
-function counterBonus(attacker,defender){
-if(attacker==="biker" && defender==="shooter") return 1.12;
-if(attacker==="shooter" && defender==="vehicle") return 1.12;
-if(attacker==="vehicle" && defender==="bulker") return 1.12;
-if(attacker==="bulker" && defender==="biker") return 1.12;
-
-if(defender==="biker" && attacker==="shooter") return 0.92;
-if(defender==="shooter" && attacker==="vehicle") return 0.92;
-if(defender==="vehicle" && attacker==="bulker") return 0.92;
-if(defender==="bulker" && attacker==="biker") return 0.92;
-
-return 1;
+adjustedYourPower+=yourTotals[att]*(1+counterEffect);
 }
 
-let chart1,chart2;
+let ratio=adjustedYourPower/(enemyPower||1);
 
-function calculate(){
-
-let mode=document.getElementById("mode").value;
-
-let yourTotal=0;
-let enemyTotal=0;
-
-let yourDetail={};
-let enemyDetail={};
-
-types.forEach(t=>{
-let yc=+document.getElementById(`you_${t}_count`).value;
-let ya=+document.getElementById(`you_${t}_atk`).value;
-let yd=+document.getElementById(`you_${t}_def`).value;
-let ym=+document.getElementById(`you_${t}_dmg`).value;
-
-let ec=+document.getElementById(`enemy_${t}_count`).value;
-let ea=+document.getElementById(`enemy_${t}_atk`).value;
-let ed=+document.getElementById(`enemy_${t}_def`).value;
-let em=+document.getElementById(`enemy_${t}_dmg`).value;
-
-yourDetail[t]=basePower(yc,ya,yd,ym,mode);
-enemyDetail[t]=basePower(ec,ea,ed,em,mode);
-
-yourTotal+=yourDetail[t];
-enemyTotal+=enemyDetail[t];
-});
-
-// application contre-type global simplifié
-let counterMultiplier=1;
-
-types.forEach(att=>{
-types.forEach(def=>{
-counterMultiplier*=counterBonus(att,def);
-});
-});
-
-yourTotal*=counterMultiplier;
-
-let ratio=yourTotal/enemyTotal;
-
-let result="";
-let lossYou=0;
-let lossEnemy=0;
-
-if(ratio>1.2){
-result="<span class='good'>Victoire probable solide</span>";
-lossYou=0.08; lossEnemy=0.35;
-}
-else if(ratio>1.05){
-result="<span class='medium'>Victoire serrée</span>";
-lossYou=0.18; lossEnemy=0.45;
-}
-else if(ratio>0.9){
-result="<span class='medium'>Combat risqué</span>";
-lossYou=0.35; lossEnemy=0.40;
-}
-else{
-result="<span class='bad'>Défaite probable</span>";
-lossYou=0.55; lossEnemy=0.20;
-}
-
-// prudence supplémentaire
-lossYou*=1.1;
-
-let totalTroopsYou=types.reduce((sum,t)=>sum+ +document.getElementById(`you_${t}_count`).value,0);
-let totalTroopsEnemy=types.reduce((sum,t)=>sum+ +document.getElementById(`enemy_${t}_count`).value,0);
-
-let estimatedLossYou=Math.round(totalTroopsYou*lossYou);
-let estimatedLossEnemy=Math.round(totalTroopsEnemy*lossEnemy);
+let verdict=ratio>1.1?"<span class='good'>Victoire probable</span>":
+ratio>0.9?"<span class='medium'>Combat serré</span>":
+"<span class='bad'>Défaite probable</span>";
 
 document.getElementById("result").innerHTML=
-"<h2>Votre puissance estimée : "+Math.round(yourTotal)+"</h2>"+
-"<h2>Puissance ennemie : "+Math.round(enemyTotal)+"</h2>"+
-result+
-"<br><br>Ratio : "+ratio.toFixed(2)+
-"<br><br>💀 Vos pertes estimées : "+estimatedLossYou+
-"<br>💀 Pertes ennemies estimées : "+estimatedLossEnemy+
-"<br><br>🧠 Conseil : maintenir 20-30% Bulker en PvP / Priorité Shooter en Cop Raid";
+"<h3>Votre puissance ajustée : "+Math.round(adjustedYourPower)+"</h3>"+
+"<h3>Puissance ennemie : "+Math.round(enemyPower)+"</h3>"+
+verdict+
+"<br><br>Ratio : "+ratio.toFixed(2);
 
-if(chart1)chart1.destroy();
-chart1=new Chart(powerChart,{
+if(battleChart)battleChart.destroy();
+battleChart=new Chart(document.getElementById("battleChart"),{
 type:'bar',
 data:{
-labels:types,
-datasets:[
-{label:"Vous",data:Object.values(yourDetail),backgroundColor:"#44ff88"},
-{label:"Ennemi",data:Object.values(enemyDetail),backgroundColor:"#ff4444"}
-]
-}
-});
-
-if(chart2)chart2.destroy();
-chart2=new Chart(lossChart,{
-type:'doughnut',
-data:{
-labels:["Vos pertes","Pertes ennemies"],
+labels:["Vous","Ennemi"],
 datasets:[{
-data:[estimatedLossYou,estimatedLossEnemy],
-backgroundColor:["#ffaa00","#ff4444"]
+data:[adjustedYourPower,enemyPower],
+backgroundColor:["#44ff88","#ff4444"]
 }]
+},
+options:{
+plugins:{legend:{display:false}},
+scales:{
+x:{ticks:{color:"#fff"}},
+y:{ticks:{color:"#fff"}}
+}
 }
 });
-
 }
+
+buildSide("you","you_classes");
+buildSide("enemy","enemy_classes");
 
 </script>
 
