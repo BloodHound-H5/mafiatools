@@ -2,12 +2,12 @@
 <html lang="fr">
 <head>
 <meta charset="UTF-8">
-<title>Mafia City - ELITE PvP Simulator V8.1</title>
+<title>Mafia City - ELITE PvP Simulator V12.3</title>
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <style>
 body{background:#0f0f0f;color:#eee;font-family:Arial;padding:20px}
 h1{text-align:center;color:#f4c542}
-.container{max-width:2000px;margin:auto;background:#1a1a1a;padding:20px;border-radius:10px}
+.container{max-width:2300px;margin:auto;background:#1a1a1a;padding:20px;border-radius:10px}
 .section-title{color:#ffcc00;margin-top:20px}
 input,select{width:100%;padding:6px;margin-top:4px;border-radius:5px;border:none}
 button{margin-top:6px;padding:6px;background:#f4c542;border:none;font-weight:bold;cursor:pointer;border-radius:6px}
@@ -36,124 +36,28 @@ hr{margin:25px 0;border:1px solid #333}
 </nav>
 
 <div class="container">
+
+<label>⚔️ Mode Combat</label>
+<select id="mode">
+<option value="cop">Cop</option>
+<option value="governor">Governor</option>
+<option value="clanwar">Clan War</option>
+</select>
+
 <div class="grid2">
-
-<!-- ================= VOUS ================= -->
-<div>
-<h2 class="section-title">⚔️ VOUS</h2>
-
-<label>🏛 Manoir (1-37)</label>
-<input type="number" id="manor_you" value="30" min="1" max="37">
-
-<h3>🧨 Héros (max 3)</h3>
-<select id="hero_you"></select>
-<select id="heroStar_you">
-<option value="1">1⭐</option><option value="2">2⭐</option>
-<option value="3">3⭐</option><option value="4">4⭐</option>
-<option value="5">5⭐</option>
-</select>
-<button onclick="addEntity('hero','you')">Ajouter</button>
-<div id="heroList_you"></div>
-
-<h3>🧟 Renégats (max 3)</h3>
-<select id="renegade_you"></select>
-<select id="renStar_you">
-<option value="1">1⭐</option><option value="2">2⭐</option>
-<option value="3">3⭐</option><option value="4">4⭐</option>
-<option value="5">5⭐</option>
-</select>
-<button onclick="addEntity('renegade','you')">Ajouter</button>
-<div id="renegadeList_you"></div>
-
-<h3>🐾 Animaux (max 3)</h3>
-<select id="animal_you"></select>
-<select id="aniStar_you">
-<option value="1">1⭐</option><option value="2">2⭐</option>
-<option value="3">3⭐</option><option value="4">4⭐</option>
-<option value="5">5⭐</option>
-</select>
-<button onclick="addEntity('animal','you')">Ajouter</button>
-<div id="animalList_you"></div>
-
-<h3>📊 Stats (%)</h3>
-<div class="stat-box">
-Riders ATK <input type="number" id="atk_riders_you" value="100">
-DEF <input type="number" id="def_riders_you" value="100">
-DMG <input type="number" id="dmg_riders_you" value="100"><br>
-Shooters ATK <input type="number" id="atk_shooters_you" value="100">
-DEF <input type="number" id="def_shooters_you" value="100">
-DMG <input type="number" id="dmg_shooters_you" value="100"><br>
-Bruisers ATK <input type="number" id="atk_bruisers_you" value="100">
-DEF <input type="number" id="def_bruisers_you" value="100">
-DMG <input type="number" id="dmg_bruisers_you" value="100">
-</div>
-
-<h3>🪖 Troupes</h3>
-<div id="troops_you"></div>
-
-</div>
-
-<!-- ================= ENNEMI ================= -->
-<div>
-<h2 class="section-title">🎯 ENNEMI</h2>
-
-<label>🏛 Manoir (1-37)</label>
-<input type="number" id="manor_enemy" value="30" min="1" max="37">
-
-<h3>🧨 Héros (max 3)</h3>
-<select id="hero_enemy"></select>
-<select id="heroStar_enemy">
-<option value="1">1⭐</option><option value="2">2⭐</option>
-<option value="3">3⭐</option><option value="4">4⭐</option>
-<option value="5">5⭐</option>
-</select>
-<button onclick="addEntity('hero','enemy')">Ajouter</button>
-<div id="heroList_enemy"></div>
-
-<h3>🧟 Renégats (max 3)</h3>
-<select id="renegade_enemy"></select>
-<select id="renStar_enemy">
-<option value="1">1⭐</option><option value="2">2⭐</option>
-<option value="3">3⭐</option><option value="4">4⭐</option>
-<option value="5">5⭐</option>
-</select>
-<button onclick="addEntity('renegade','enemy')">Ajouter</button>
-<div id="renegadeList_enemy"></div>
-
-<h3>🐾 Animaux (max 3)</h3>
-<select id="animal_enemy"></select>
-<select id="aniStar_enemy">
-<option value="1">1⭐</option><option value="2">2⭐</option>
-<option value="3">3⭐</option><option value="4">4⭐</option>
-<option value="5">5⭐</option>
-</select>
-<button onclick="addEntity('animal','enemy')">Ajouter</button>
-<div id="animalList_enemy"></div>
-
-<h3>📊 Stats (%)</h3>
-<div class="stat-box">
-Riders ATK <input type="number" id="atk_riders_enemy" value="100">
-DEF <input type="number" id="def_riders_enemy" value="100">
-DMG <input type="number" id="dmg_riders_enemy" value="100"><br>
-Shooters ATK <input type="number" id="atk_shooters_enemy" value="100">
-DEF <input type="number" id="def_shooters_enemy" value="100">
-DMG <input type="number" id="dmg_shooters_enemy" value="100"><br>
-Bruisers ATK <input type="number" id="atk_bruisers_enemy" value="100">
-DEF <input type="number" id="def_bruisers_enemy" value="100">
-DMG <input type="number" id="dmg_bruisers_enemy" value="100">
-</div>
-
-<h3>🪖 Troupes</h3>
-<div id="troops_enemy"></div>
-
-</div>
+<div id="left"></div>
+<div id="right"></div>
 </div>
 
 <hr>
 <button onclick="simulate()">SIMULER</button>
 
 <div id="result"></div>
+<div id="losses"></div>
+
 <canvas id="powerChart"></canvas>
+<canvas id="pieYou"></canvas>
+<canvas id="pieEnemy"></canvas>
 
 </div>
 
@@ -194,38 +98,101 @@ const animals=[
 "Griffe Déchirante","Aile de la Mort","Mâchoire Rugissante"
 ];
 
-/* Populate */
-heroes.forEach(h=>{
-hero_you.innerHTML+=`<option>${h}</option>`;
-hero_enemy.innerHTML+=`<option>${h}</option>`;
-});
-renegades.forEach(r=>{
-renegade_you.innerHTML+=`<option>${r}</option>`;
-renegade_enemy.innerHTML+=`<option>${r}</option>`;
-});
-animals.forEach(a=>{
-animal_you.innerHTML+=`<option>${a}</option>`;
-animal_enemy.innerHTML+=`<option>${a}</option>`;
-});
+/* ================= VEHICULES ================= */
 
-/* ================= TROOPS ================= */
+const vehicles={
+"Black Beauty":{cost:296},
+"Ladybug":{cost:1312},
+"White Shadow":{cost:3584},
+"Icy Babe":{cost:5376},
+"Flash Rider":{cost:8480},
+"Knight":{cost:8204},
+"Ignite":{cost:41218},
+"White Devil":{cost:589848},
+"Twilight Blade":{cost:1163264},
+"Hellfire":{cost:3244032},
+"Poison Ivy":{cost:3801088}
+};
+
+/* ================= PARAM ================= */
+
+const tierMult={6:0.6,7:0.7,8:0.8,9:0.9,10:1,11:1.15,12:1.35,13:1.6};
 
 const troopTypes={
 riders:["Motards","Pilotes"],
 shooters:["Snipers","Automatiques"],
 bruisers:["Gardes","Mercenaires"]
 };
-const tierMult={6:0.6,7:0.7,8:0.8,9:0.9,10:1,11:1.15,12:1.35,13:1.6};
 
-function buildTroops(side){
-for(let type in troopTypes){
-document.getElementById("troops_"+side).innerHTML+=
-`<h4>${type.toUpperCase()}</h4>
-<div id="${side}_${type}"></div>
-<button onclick="addSubtype('${side}','${type}')">Ajouter</button>`;
-troopTypes[type].forEach(()=>addSubtype(side,type));
+/* ================= BUILD UI ================= */
+
+function buildSide(side,label){
+return `
+<h2 class="section-title">${label}</h2>
+
+<label>🏛 Manoir (max 37)</label>
+<input type="number" id="manor_${side}" value="30" min="1" max="37">
+
+<h3>🚗 Véhicule Parrain</h3>
+<select id="vehicle_${side}">
+<option value="">Aucun</option>
+${Object.keys(vehicles).map(v=>`<option>${v}</option>`).join("")}
+</select>
+
+<h3>Héros (ordre = Att / Def / Soutien)</h3>
+<select id="hero_${side}_1"><option value="">Aucun</option>${heroes.map(h=>`<option>${h}</option>`).join("")}</select>
+<select id="heroStar_${side}_1"><option value="1">1⭐</option><option value="2">2⭐</option><option value="3">3⭐</option><option value="4">4⭐</option><option value="5">5⭐</option></select>
+
+<select id="hero_${side}_2"><option value="">Aucun</option>${heroes.map(h=>`<option>${h}</option>`).join("")}</select>
+<select id="heroStar_${side}_2"><option value="1">1⭐</option><option value="2">2⭐</option><option value="3">3⭐</option><option value="4">4⭐</option><option value="5">5⭐</option></select>
+
+<select id="hero_${side}_3"><option value="">Aucun</option>${heroes.map(h=>`<option>${h}</option>`).join("")}</select>
+<select id="heroStar_${side}_3"><option value="1">1⭐</option><option value="2">2⭐</option><option value="3">3⭐</option><option value="4">4⭐</option><option value="5">5⭐</option></select>
+
+<h3>Renégats (ordre = Att / Def / Soutien)</h3>
+<select id="renegade_${side}_1"><option value="">Aucun</option>${renegades.map(r=>`<option>${r}</option>`).join("")}</select>
+<select id="renStar_${side}_1"><option value="1">1⭐</option><option value="2">2⭐</option><option value="3">3⭐</option><option value="4">4⭐</option><option value="5">5⭐</option></select>
+
+<select id="renegade_${side}_2"><option value="">Aucun</option>${renegades.map(r=>`<option>${r}</option>`).join("")}</select>
+<select id="renStar_${side}_2"><option value="1">1⭐</option><option value="2">2⭐</option><option value="3">3⭐</option><option value="4">4⭐</option><option value="5">5⭐</option></select>
+
+<select id="renegade_${side}_3"><option value="">Aucun</option>${renegades.map(r=>`<option>${r}</option>`).join("")}</select>
+<select id="renStar_${side}_3"><option value="1">1⭐</option><option value="2">2⭐</option><option value="3">3⭐</option><option value="4">4⭐</option><option value="5">5⭐</option></select>
+
+<h3>Animaux (ordre = Att / Def / Soutien)</h3>
+<select id="animal_${side}_1"><option value="">Aucun</option>${animals.map(a=>`<option>${a}</option>`).join("")}</select>
+<select id="aniStar_${side}_1"><option value="1">1⭐</option><option value="2">2⭐</option><option value="3">3⭐</option><option value="4">4⭐</option><option value="5">5⭐</option></select>
+
+<select id="animal_${side}_2"><option value="">Aucun</option>${animals.map(a=>`<option>${a}</option>`).join("")}</select>
+<select id="aniStar_${side}_2"><option value="1">1⭐</option><option value="2">2⭐</option><option value="3">3⭐</option><option value="4">4⭐</option><option value="5">5⭐</option></select>
+
+<select id="animal_${side}_3"><option value="">Aucun</option>${animals.map(a=>`<option>${a}</option>`).join("")}</select>
+<select id="aniStar_${side}_3"><option value="1">1⭐</option><option value="2">2⭐</option><option value="3">3⭐</option><option value="4">4⭐</option><option value="5">5⭐</option></select>
+
+<h3>Stats (%)</h3>
+<div class="stat-box">
+Riders ATK <input type="number" id="atk_riders_${side}" value="100">
+DEF <input type="number" id="def_riders_${side}" value="100">
+DMG <input type="number" id="dmg_riders_${side}" value="100"><br>
+Shooters ATK <input type="number" id="atk_shooters_${side}" value="100">
+DEF <input type="number" id="def_shooters_${side}" value="100">
+DMG <input type="number" id="dmg_shooters_${side}" value="100"><br>
+Bruisers ATK <input type="number" id="atk_bruisers_${side}" value="100">
+DEF <input type="number" id="def_bruisers_${side}" value="100">
+DMG <input type="number" id="dmg_bruisers_${side}" value="100">
+</div>
+
+<h3>Troupes</h3>
+<div id="troops_${side}"></div>
+`;
 }
-}
+
+// Création des colonnes
+left.innerHTML=buildSide("you","⚔️ VOUS");
+right.innerHTML=buildSide("enemy","🎯 ENNEMI");
+
+/* ================= TROUPE ================= */
+
 function addSubtype(side,type){
 let div=document.createElement("div");
 div.className="subtype-box";
@@ -240,74 +207,155 @@ div.innerHTML=`
 </select>`;
 document.getElementById(side+"_"+type).appendChild(div);
 }
+
+function buildTroops(side){
+for(let type in troopTypes){
+document.getElementById("troops_"+side).innerHTML+=
+`<h4>${type.toUpperCase()}</h4>
+<div id="${side}_${type}"></div>
+<button onclick="addSubtype('${side}','${type}')">Ajouter</button>`;
+troopTypes[type].forEach(()=>addSubtype(side,type));
+}
+}
+
 buildTroops("you");
 buildTroops("enemy");
 
-/* ================= STORE ================= */
+/* ================= BONUS ================= */
 
-let store={you:{hero:[],renegade:[],animal:[]},
-enemy:{hero:[],renegade:[],animal:[]}};
-
-function addEntity(type,side){
-if(store[side][type].length>=3){alert("Max 3");return;}
-let name=document.getElementById(type+"_"+side).value;
-let star=parseInt(document.getElementById(
-(type==="hero"?"heroStar_":type==="renegade"?"renStar_":"aniStar_")+side
-).value);
-store[side][type].push({name,star});
-document.getElementById(type+"List_"+side).innerHTML+=name+" ("+star+"⭐)<br>";
+function computeBonusHeroes(side){
+let bonusAtt=0,bonusDef=0,bonusSup=0;
+for(let i=1;i<=3;i++){
+let name=document.getElementById(`hero_${side}_${i}`).value;
+let star=parseInt(document.getElementById(`heroStar_${side}_${i}`).value)||0;
+if(i===1) bonusAtt+=star*0.04;
+if(i===2) bonusDef+=star*0.03;
+if(i===3) bonusSup+=star*0.02;
+}
+return {att:bonusAtt,def:bonusDef,sup:bonusSup};
 }
 
-/* ================= CALCUL ================= */
+function computeBonusRenegades(side){
+let bonusAtt=0,bonusDef=0,bonusSup=0;
+for(let i=1;i<=3;i++){
+let star=parseInt(document.getElementById(`renStar_${side}_${i}`).value)||0;
+if(i===1) bonusAtt+=star*0.03;
+if(i===2) bonusDef+=star*0.02;
+if(i===3) bonusSup+=star*0.015;
+}
+return {att:bonusAtt,def:bonusDef,sup:bonusSup};
+}
 
-let chart;
+function computeBonusAnimals(side){
+let bonusAtt=0,bonusDef=0,bonusSup=0;
+for(let i=1;i<=3;i++){
+let star=parseInt(document.getElementById(`aniStar_${side}_${i}`).value)||0;
+if(i===1) bonusAtt+=star*0.03;
+if(i===2) bonusDef+=star*0.02;
+if(i===3) bonusSup+=star*0.015;
+}
+return {att:bonusAtt,def:bonusDef,sup:bonusSup};
+}
+
+/* ================= SIMULATION ================= */
 
 function simulate(){
 
-function compute(side){
-let total=0;
+let mode=document.getElementById("mode").value;
+let modeAtk=1,modeDef=1;
+if(mode==="governor"){modeAtk=0.95;modeDef=1.10;}
+if(mode==="clanwar"){modeAtk=1.10;modeDef=1;}
 
-for(let type in troopTypes){
-document.querySelectorAll(`#${side}_${type} .subtype-box`).forEach(box=>{
-let count=parseFloat(box.children[1].value);
-let tier=parseInt(box.children[2].value);
-let atk=parseFloat(document.getElementById("atk_"+type+"_"+side).value)/100;
-let def=parseFloat(document.getElementById("def_"+type+"_"+side).value)/100;
-let dmg=parseFloat(document.getElementById("dmg_"+type+"_"+side).value)/100;
-let base=count*tierMult[tier];
-total+=base*(atk+def+dmg)/3;
-});
-}
-
-let starBonus=0;
-["hero","renegade","animal"].forEach(cat=>{
-store[side][cat].forEach(e=>{
-starBonus+=e.star*0.03;
-});
-});
+function compute(side,isAttacker){
 
 let manor=parseFloat(document.getElementById("manor_"+side).value);
-total*=1+starBonus+(manor*0.005);
+if(manor>37) manor=37; if(manor<1) manor=1;
+let manorBonus=manor*0.005;
 
-return total;
+let classes={riders:0,shooters:0,bruisers:0};
+
+for(let c in classes){
+let atk=parseFloat(document.getElementById(`atk_${c}_${side}`).value)/100;
+let def=parseFloat(document.getElementById(`def_${c}_${side}`).value)/100;
+let dmg=parseFloat(document.getElementById(`dmg_${c}_${side}`).value)/100;
+
+document.querySelectorAll(`#${side}_${c} .subtype-box`).forEach(box=>{
+let count=parseFloat(box.children[1].value);
+let tier=parseInt(box.children[2].value);
+let base=count*tierMult[tier];
+let power=base*(atk+def+dmg)/3;
+
+// Bonus héros/renegats/animals
+let heroBonus=computeBonusHeroes(side);
+let renBonus=computeBonusRenegades(side);
+let aniBonus=computeBonusAnimals(side);
+
+power*=1+heroBonus.att+renBonus.att+aniBonus.att+manorBonus;
+
+classes[c]+=power;
+});
 }
 
-let you=compute("you");
-let enemy=compute("enemy");
+let vehicleName=document.getElementById("vehicle_"+side).value;
+let vehiclePower=vehicleName?vehicles[vehicleName].cost:0;
 
-result.innerHTML=`<h3>Vous : ${Math.round(you)}</h3>
-<h3>Ennemi : ${Math.round(enemy)}</h3>
-<h3>Ratio : ${(you/(enemy||1)).toFixed(2)}</h3>`;
+let total=classes.riders+classes.shooters+classes.bruisers+vehiclePower;
 
-if(chart)chart.destroy();
-chart=new Chart(document.getElementById("powerChart"),{
+if(isAttacker) total*=modeAtk;
+else total*=modeDef;
+
+return {classes,total};
+}
+
+let you=compute("you",true);
+let enemy=compute("enemy",false);
+
+/* Counter */
+if(enemy.shooters>enemy.bruisers) you.classes.riders*=1.2;
+if(enemy.bruisers>enemy.riders) you.classes.shooters*=1.2;
+if(enemy.riders>enemy.shooters) you.classes.bruisers*=1.2;
+
+let totalYou=you.total;
+let totalEnemy=enemy.total;
+
+let prob=(totalYou/(totalYou+totalEnemy))*100;
+let ratio=totalEnemy/totalYou;
+let lossYou=Math.min(ratio*50,90);
+let lossEnemy=Math.min((1/ratio)*50,90);
+
+result.innerHTML=
+`<h3>Vous : ${Math.round(totalYou)}</h3>
+<h3>Ennemi : ${Math.round(totalEnemy)}</h3>
+<h3>Probabilité victoire : ${prob.toFixed(1)}%</h3>`;
+
+losses.innerHTML=
+`<h3>Pertes estimées</h3>
+Vous ≈ ${lossYou.toFixed(1)}%<br>
+Ennemi ≈ ${lossEnemy.toFixed(1)}%`;
+
+/* Charts */
+if(window.barChart)barChart.destroy();
+barChart=new Chart(powerChart,{
 type:"bar",
 data:{labels:["Vous","Ennemi"],
-datasets:[{label:"Puissance",data:[you,enemy]}]}
+datasets:[{label:"Puissance Totale",data:[totalYou,totalEnemy]}]}
+});
+
+if(window.pieY)pieY.destroy();
+pieY=new Chart(pieYou,{
+type:"pie",
+data:{labels:["Riders","Shooters","Bruisers"],
+datasets:[{data:[you.classes.riders,you.classes.shooters,you.classes.bruisers]}]}
+});
+
+if(window.pieE)pieE.destroy();
+pieE=new Chart(pieEnemy,{
+type:"pie",
+data:{labels:["Riders","Shooters","Bruisers"],
+datasets:[{data:[enemy.classes.riders,enemy.classes.shooters,enemy.classes.bruisers]}]}
 });
 
 }
-
 </script>
 </body>
 </html>
