@@ -65,6 +65,74 @@ a, a:hover, a:active{color:white!important;text-decoration:none;}
 
 <script>
 
+/* ================= NOUVEAU SYSTEME MANOIR ================= */
+
+function buildManorOptions(){
+let html="";
+for(let i=1;i<=34;i++){
+html+=`<option value="${i}">${i}</option>`;
+}
+html+=`<option value="35">35</option>`;
+for(let p=10;p<=90;p+=10){
+html+=`<option value="35_${p}">35 + ${p}%</option>`;
+}
+html+=`<option value="36">36</option>`;
+for(let p=10;p<=90;p+=10){
+html+=`<option value="36_${p}">36 + ${p}%</option>`;
+}
+html+=`<option value="37">37</option>`;
+return html;
+}
+
+function getManorData(value){
+
+const basePower={
+1:27,5:534,10:4761,20:46527,
+30:233280,31:268272,32:321926,
+33:386311,34:463574,35:556288,
+36:1193085,37:2505479
+};
+
+let level=parseInt(value);
+let percent=0;
+
+if(value.includes("_")){
+let parts=value.split("_");
+level=parseInt(parts[0]);
+percent=parseInt(parts[1]);
+}
+
+let power=basePower[level]||0;
+
+/* bonus puissance % sur palier */
+if(percent>0){
+power*=1+(percent/100);
+}
+
+/* debuffs */
+let atkDebuff=0;
+let defDebuff=0;
+
+if(level===35){
+atkDebuff = percent/100; // 10% → 0.10 etc
+}
+
+if(level===36){
+atkDebuff = 0.10 + (percent/100);
+defDebuff = 0.15;
+}
+
+if(level===37){
+atkDebuff = 0.20;
+defDebuff = 0.30;
+}
+
+return {power,atkDebuff,defDebuff};
+}
+
+
+
+
 /* ================= LISTES COMPLETES ================= */
 
 const heroes=[
@@ -133,14 +201,16 @@ return `
 <h2 class="section-title">${label}</h2>
 
 <label>🏛 Manoir (max 37)</label>
-<input type="number" id="manor_${side}" value="30" min="1" max="37">
-
+<select id="manor_${side}">
+${buildManorOptions()}
+</select>
+<h3>🧥 Équipement Parrain</h3>
+<div id="equip_${side}"></div>
 <h3>🚗 Véhicule Parrain</h3>
 <select id="vehicle_${side}">
 <option value="">Aucun</option>
 ${Object.keys(vehicles).map(v=>`<option>${v}</option>`).join("")}
 </select>
-
 <h3>Héros (ordre = Att / Def / Soutien)</h3>
 <select id="hero_${side}_1"><option value="">Aucun</option>${heroes.map(h=>`<option>${h}</option>`).join("")}</select>
 <select id="heroStar_${side}_1"><option value="1">1⭐</option><option value="2">2⭐</option><option value="3">3⭐</option><option value="4">4⭐</option><option value="5">5⭐</option></select>
@@ -259,6 +329,197 @@ if(i===3) bonusSup+=star*0.015;
 return {att:bonusAtt,def:bonusDef,sup:bonusSup};
 }
 
+
+/* ================= EQUIPEMENTS PARRAIN ================= */
+
+const equipmentSlots=["fusil","arme","accessoire","vetements","pantalon","chaussures"];
+
+const equipmentSets={
+
+"base":{
+level:43,
+bonusSet:{},
+pieces:{
+fusil:{
+"Fusil éclaireur":{atk_vehicle:18.8},
+"TAR 21":{atk_bruisers:18.8,atk_riders:37.6}
+},
+arme:{
+"Shanker":{atk_riders:18.8},
+"M500 Revolver":{atk_bruisers:18.8,atk_riders:18.8,atk_vehicle:18.8}
+},
+accessoire:{
+"Bague Rubis":{def_manoir:37},
+"Montre Langer":{atk_riders:37.6,atk_vehicle:18.8}
+},
+vetements:{
+"Torse Bague Rubis":{def_manoir:37},
+"Burberry Trench Coat":{def_manoir:37}
+},
+pantalon:{
+"Pantalon patricien":{atk_shooters:18.8,def_manoir:37},
+"Pantalon velours":{}
+},
+chaussures:{
+"Chaussures patricien":{atk_shooters:18.8,def_manoir:37},
+"Allen Koltin":{atk_shooters:18.8,atk_riders:18.8,atk_vehicle:18.8}
+}
+}
+},
+
+"dominant":{
+level:35,
+bonusSet:{6:{dmg_riders:10}},
+pieces:{
+fusil:{unique:{atk_bruisers:19.5,atk_riders:39}},
+arme:{unique:{atk_bruisers:19.5,atk_riders:19.5,atk_vehicle:19.5}},
+accessoire:{unique:{atk_bruisers:19.5,atk_riders:39}},
+vetements:{unique:{atk_riders:19.5,def_manoir:28}},
+pantalon:{unique:{atk_riders:17.5,dmg_riders:1.5,hp_riders:15.6}},
+chaussures:{unique:{atk_riders:19.5,atk_vehicle:19.5}}
+}
+},
+
+"souverain":{
+level:43,
+bonusSet:{
+2:{def_troops:7},
+4:{def_enemy:9},
+6:{atk_troops:11}
+},
+pieces:{
+fusil:{unique:{atk_shooters:25,atk_riders:50,atk_troops:6}},
+arme:{unique:{atk_riders:25,atk_bruisers:50,atk_vehicle:25}},
+accessoire:{unique:{atk_riders:25,hp_riders:25,hp_shooters:25,hp_vehicle:25}},
+vetements:{unique:{atk_bruisers:25,atk_riders:25,def_troops:6}},
+pantalon:{unique:{atk_riders:25,def_troops:6,hp_riders:25}},
+chaussures:{unique:{atk_bruisers:25,atk_riders:25,atk_troops:6}}
+}
+}
+
+};
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+function buildEquipment(side){
+
+let html="";
+
+equipmentSlots.forEach(slot=>{
+
+html+=`
+<div class="subtype-box">
+<b>${slot.toUpperCase()}</b>
+
+<select id="${side}_${slot}_set" onchange="updatePiece('${side}','${slot}')">
+<option value="">Aucun</option>
+${Object.keys(equipmentSets).map(s=>`<option value="${s}">${s}</option>`).join("")}
+</select>
+
+<select id="${side}_${slot}_piece"></select>
+
+<select id="${side}_${slot}_reinforce">
+${[...Array(21).keys()].map(i=>`<option value="${i}">${i}</option>`).join("")}
+</select>
+
+</div>
+`;
+});
+
+document.getElementById("equip_"+side).innerHTML=html;
+}
+
+function updatePiece(side,slot){
+
+let set=document.getElementById(`${side}_${slot}_set`).value;
+let pieceSelect=document.getElementById(`${side}_${slot}_piece`);
+pieceSelect.innerHTML="";
+
+if(!set) return;
+
+let pieces=equipmentSets[set].pieces[slot];
+
+Object.keys(pieces).forEach(name=>{
+pieceSelect.innerHTML+=`<option value="${name}">${name}</option>`;
+});
+
+}
+
+buildEquipment("you");
+buildEquipment("enemy");
+
+
+
+
+
+
+function computeEquipment(side){
+
+let bonuses={};
+let setCount={};
+
+equipmentSlots.forEach(slot=>{
+
+let set=document.getElementById(`${side}_${slot}_set`).value;
+let piece=document.getElementById(`${side}_${slot}_piece`).value;
+let reinforce=parseInt(document.getElementById(`${side}_${slot}_reinforce`).value);
+
+if(!set || !piece) return;
+
+if(!setCount[set]) setCount[set]=0;
+setCount[set]++;
+
+let data=equipmentSets[set].pieces[slot][piece] 
+|| equipmentSets[set].pieces[slot]["unique"];
+
+for(let stat in data){
+
+let base=data[stat];
+let value=base*(1+reinforce/20);
+
+if(!bonuses[stat]) bonuses[stat]=0;
+bonuses[stat]+=value;
+
+}
+
+});
+
+// bonus de set
+for(let set in setCount){
+
+let count=setCount[set];
+let bonusSet=equipmentSets[set].bonusSet;
+
+for(let threshold in bonusSet){
+if(count>=threshold){
+for(let stat in bonusSet[threshold]){
+if(!bonuses[stat]) bonuses[stat]=0;
+bonuses[stat]+=bonusSet[threshold][stat];
+}
+}
+}
+
+}
+
+return bonuses;
+}
+
+
+
+
 /* ================= SIMULATION ================= */
 
 function simulate(){
@@ -270,52 +531,102 @@ if(mode==="clanwar"){modeAtk=1.10;modeDef=1;}
 
 function compute(side,isAttacker){
 
-let manor=parseFloat(document.getElementById("manor_"+side).value);
-if(manor>37) manor=37; if(manor<1) manor=1;
-let manorBonus=manor*0.005;
+let manorValue=document.getElementById("manor_"+side).value;
+let manorData=getManorData(manorValue);
+
+let equipBonus=computeEquipment(side);
 
 let classes={riders:0,shooters:0,bruisers:0};
 
+// Bonus globaux
+let heroBonus=computeBonusHeroes(side);
+let renBonus=computeBonusRenegades(side);
+let aniBonus=computeBonusAnimals(side);
+
 for(let c in classes){
+
 let atk=parseFloat(document.getElementById(`atk_${c}_${side}`).value)/100;
 let def=parseFloat(document.getElementById(`def_${c}_${side}`).value)/100;
 let dmg=parseFloat(document.getElementById(`dmg_${c}_${side}`).value)/100;
 
 document.querySelectorAll(`#${side}_${c} .subtype-box`).forEach(box=>{
-let count=parseFloat(box.children[1].value);
-let tier=parseInt(box.children[2].value);
+
+let count=parseFloat(box.children[1].value)||0;
+let tier=parseInt(box.children[2].value)||6;
+
 let base=count*tierMult[tier];
 let power=base*(atk+def+dmg)/3;
 
-// Bonus héros/renegats/animals
-let heroBonus=computeBonusHeroes(side);
-let renBonus=computeBonusRenegades(side);
-let aniBonus=computeBonusAnimals(side);
+/* ===== Bonus héros ===== */
+power*=1+heroBonus.att+renBonus.att+aniBonus.att;
 
-power*=1+heroBonus.att+renBonus.att+aniBonus.att+manorBonus;
+/* ===== Bonus équipement global ===== */
+power*=1+((equipBonus.atk_troops||0)/100);
+
+/* ===== Bonus équipement par classe ===== */
+if(c==="riders"){
+power*=1+((equipBonus.atk_riders||0)/100);
+power*=1+((equipBonus.dmg_riders||0)/100);
+}
+
+if(c==="shooters"){
+power*=1+((equipBonus.atk_shooters||0)/100);
+}
+
+if(c==="bruisers"){
+power*=1+((equipBonus.atk_bruisers||0)/100);
+}
+
+/* ===== Bonus véhicules ===== */
+if(c==="riders"){
+power*=1+((equipBonus.atk_vehicle||0)/100);
+}
 
 classes[c]+=power;
+
 });
 }
 
 let vehicleName=document.getElementById("vehicle_"+side).value;
 let vehiclePower=vehicleName?vehicles[vehicleName].cost:0;
 
-let total=classes.riders+classes.shooters+classes.bruisers+vehiclePower;
+let totalClasses=classes.riders+classes.shooters+classes.bruisers;
+let total=totalClasses+vehiclePower;
 
+/* Manoir */
+total+=manorData.power;
+
+/* Mode combat */
 if(isAttacker) total*=modeAtk;
 else total*=modeDef;
 
-return {classes,total};
+return {classes,total,vehiclePower,manorData};
 }
+
+/* ===== Calcul des deux camps ===== */
 
 let you=compute("you",true);
 let enemy=compute("enemy",false);
 
-/* Counter */
-if(enemy.shooters>enemy.bruisers) you.classes.riders*=1.2;
-if(enemy.bruisers>enemy.riders) you.classes.shooters*=1.2;
-if(enemy.riders>enemy.shooters) you.classes.bruisers*=1.2;
+/* ================= COUNTER SYSTEM ================= */
+
+if(enemy.classes.shooters>enemy.classes.bruisers) you.classes.riders*=1.2;
+if(enemy.classes.bruisers>enemy.classes.riders) you.classes.shooters*=1.2;
+if(enemy.classes.riders>enemy.classes.shooters) you.classes.bruisers*=1.2;
+
+/* Recalcul total après counter */
+you.total = you.classes.riders + you.classes.shooters + you.classes.bruisers + you.vehiclePower + you.manorData.power;
+enemy.total = enemy.classes.riders + enemy.classes.shooters + enemy.classes.bruisers + enemy.vehiclePower + enemy.manorData.power;
+
+/* ================= DEBUFF MANOIR ================= */
+
+you.total *= 1 - enemy.manorData.atkDebuff;
+enemy.total *= 1 - you.manorData.atkDebuff;
+
+you.total *= 1 - enemy.manorData.defDebuff;
+enemy.total *= 1 - you.manorData.defDebuff;
+
+/* ================= RESULTATS ================= */
 
 let totalYou=you.total;
 let totalEnemy=enemy.total;
