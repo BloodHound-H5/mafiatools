@@ -23,23 +23,23 @@ a, a:hover, a:active{color:white!important;text-decoration:none;}
 
 <h1>📅 ARCHIPEL CLAN MAFIA CITY</h1>
 
-<h2>🔥 Advanced PvP Simulator 🇫🇷</h2>
+<h2>🔥 Advanced PvP Simulator 🇪🇸</h2>
 <h3 style="color:white!important;text-decoration:none;"><a href="pvp-simulator.html">🇫🇷</a> - <a href="pvp-simulator-uk.html">🇬🇧</a> - <a href="pvp-simulator-de.html">🇩🇪</a> - <a href="pvp-simulator-es.html">🇪🇸</a> - <a href="pvp-simulator-tr.html">🇹🇷</a> - <a href="pvp-simulator-it.html">🇮🇹</a></h3>
 
 <nav>
 <ul style="text-decoration:none!important">
-<li style ="list-style:none"><h4>Menu</h4></li>
-<li><a href="index.html"style="color:white;text-decoration:none!important">⚔️ Archipel Stratégie</a></li>
-<li><a href="guide-complet.html"style="color:white;text-decoration:none!important">⚔️ Aide guide</a></li>
-<li><a href="composition-troupe.html" style="color:white;text-decoration:none!important">⚔️ Composition de troupe</a></li>
-<li><a href="calcul-troupe-raid.html" style="color:white;text-decoration:none!important">⚔️ Composition de troupe raid</a></li>
-<li><a href="pvp-simulator.html" style="color:white;text-decoration:none!important">⚔️ comparatif PvP</a></li>
+<li style ="list-style:none"><h4>Menú</h4></li>
+<li><a href="index.html"style="color:white;text-decoration:none!important">⚔️ Estrategia de Archipiélago</a></li>
+<li><a href="guide-complet.html"style="color:white;text-decoration:none!important">⚔️ Guía de Ayuda</a></li>
+<li><a href="composition-troupe.html" style="color:white;text-decoration:none!important">⚔️ Composición del tropo</a></li>
+<li><a href="calcul-troupe-raid.html" style="color:white;text-decoration:none!important">⚔️ Composición de los tropos de incursión</a></li>
+<li><a href="pvp-simulator.html" style="color:white;text-decoration:none!important">⚔️ Comparación JcJ</a></li>
 </ul>
 </nav>
 
 <div class="container">
 
-<label>⚔️ Mode Combat</label>
+<label>⚔️ Modo de combate</label>
 <select id="mode">
 <option value="cop">Cop</option>
 <option value="governor">Governor</option>
@@ -52,7 +52,7 @@ a, a:hover, a:active{color:white!important;text-decoration:none;}
 </div>
 
 <hr>
-<button onclick="simulate()">SIMULER</button>
+<button onclick="simulate()">SIMULAR</button>
 
 <div id="result"></div>
 <div id="losses"></div>
@@ -132,43 +132,43 @@ function buildSide(side,label){
 return `
 <h2 class="section-title">${label}</h2>
 
-<label>🏛 Manoir (max 37)</label>
+<label>🏛 Señorío (max 37)</label>
 <input type="number" id="manor_${side}" value="30" min="1" max="37">
 
-<h3>🚗 Véhicule Parrain</h3>
+<h3>🚗 Vehículo patrocinador</h3>
 <select id="vehicle_${side}">
-<option value="">Aucun</option>
+<option value="">Ninguno</option>
 ${Object.keys(vehicles).map(v=>`<option>${v}</option>`).join("")}
 </select>
 
-<h3>Héros (ordre = Att / Def / Soutien)</h3>
-<select id="hero_${side}_1"><option value="">Aucun</option>${heroes.map(h=>`<option>${h}</option>`).join("")}</select>
+<h3>Héroes (orden = Ataque / Defensa / Apoyo)</h3>
+<select id="hero_${side}_1"><option value="">Ninguno</option>${heroes.map(h=>`<option>${h}</option>`).join("")}</select>
 <select id="heroStar_${side}_1"><option value="1">1⭐</option><option value="2">2⭐</option><option value="3">3⭐</option><option value="4">4⭐</option><option value="5">5⭐</option></select>
 
-<select id="hero_${side}_2"><option value="">Aucun</option>${heroes.map(h=>`<option>${h}</option>`).join("")}</select>
+<select id="hero_${side}_2"><option value="">Ninguno</option>${heroes.map(h=>`<option>${h}</option>`).join("")}</select>
 <select id="heroStar_${side}_2"><option value="1">1⭐</option><option value="2">2⭐</option><option value="3">3⭐</option><option value="4">4⭐</option><option value="5">5⭐</option></select>
 
-<select id="hero_${side}_3"><option value="">Aucun</option>${heroes.map(h=>`<option>${h}</option>`).join("")}</select>
+<select id="hero_${side}_3"><option value="">Ninguno</option>${heroes.map(h=>`<option>${h}</option>`).join("")}</select>
 <select id="heroStar_${side}_3"><option value="1">1⭐</option><option value="2">2⭐</option><option value="3">3⭐</option><option value="4">4⭐</option><option value="5">5⭐</option></select>
 
-<h3>Renégats (ordre = Att / Def / Soutien)</h3>
-<select id="renegade_${side}_1"><option value="">Aucun</option>${renegades.map(r=>`<option>${r}</option>`).join("")}</select>
+<h3>Renegados (orden = Ataque / Defensa / Apoyo)</h3>
+<select id="renegade_${side}_1"><option value="">Ninguno</option>${renegades.map(r=>`<option>${r}</option>`).join("")}</select>
 <select id="renStar_${side}_1"><option value="1">1⭐</option><option value="2">2⭐</option><option value="3">3⭐</option><option value="4">4⭐</option><option value="5">5⭐</option></select>
 
-<select id="renegade_${side}_2"><option value="">Aucun</option>${renegades.map(r=>`<option>${r}</option>`).join("")}</select>
+<select id="renegade_${side}_2"><option value="">Ninguno</option>${renegades.map(r=>`<option>${r}</option>`).join("")}</select>
 <select id="renStar_${side}_2"><option value="1">1⭐</option><option value="2">2⭐</option><option value="3">3⭐</option><option value="4">4⭐</option><option value="5">5⭐</option></select>
 
-<select id="renegade_${side}_3"><option value="">Aucun</option>${renegades.map(r=>`<option>${r}</option>`).join("")}</select>
+<select id="renegade_${side}_3"><option value="">Ninguno</option>${renegades.map(r=>`<option>${r}</option>`).join("")}</select>
 <select id="renStar_${side}_3"><option value="1">1⭐</option><option value="2">2⭐</option><option value="3">3⭐</option><option value="4">4⭐</option><option value="5">5⭐</option></select>
 
-<h3>Animaux (ordre = Att / Def / Soutien)</h3>
-<select id="animal_${side}_1"><option value="">Aucun</option>${animals.map(a=>`<option>${a}</option>`).join("")}</select>
+<h3>Animales (orden = Ataque / Defensa / Apoyo)</h3>
+<select id="animal_${side}_1"><option value="">Ninguno</option>${animals.map(a=>`<option>${a}</option>`).join("")}</select>
 <select id="aniStar_${side}_1"><option value="1">1⭐</option><option value="2">2⭐</option><option value="3">3⭐</option><option value="4">4⭐</option><option value="5">5⭐</option></select>
 
-<select id="animal_${side}_2"><option value="">Aucun</option>${animals.map(a=>`<option>${a}</option>`).join("")}</select>
+<select id="animal_${side}_2"><option value="">Ninguno</option>${animals.map(a=>`<option>${a}</option>`).join("")}</select>
 <select id="aniStar_${side}_2"><option value="1">1⭐</option><option value="2">2⭐</option><option value="3">3⭐</option><option value="4">4⭐</option><option value="5">5⭐</option></select>
 
-<select id="animal_${side}_3"><option value="">Aucun</option>${animals.map(a=>`<option>${a}</option>`).join("")}</select>
+<select id="animal_${side}_3"><option value="">Ninguno</option>${animals.map(a=>`<option>${a}</option>`).join("")}</select>
 <select id="aniStar_${side}_3"><option value="1">1⭐</option><option value="2">2⭐</option><option value="3">3⭐</option><option value="4">4⭐</option><option value="5">5⭐</option></select>
 
 <h3>Stats (%)</h3>
@@ -184,14 +184,14 @@ DEF <input type="number" id="def_bruisers_${side}" value="100">
 DMG <input type="number" id="dmg_bruisers_${side}" value="100">
 </div>
 
-<h3>Troupes</h3>
+<h3>Tropas</h3>
 <div id="troops_${side}"></div>
 `;
 }
 
 // Création des colonnes
-left.innerHTML=buildSide("you","⚔️ VOUS");
-right.innerHTML=buildSide("enemy","🎯 ENNEMI");
+left.innerHTML=buildSide("you","⚔️ TÚ");
+right.innerHTML=buildSide("enemy","🎯 ENEMIGO");
 
 /* ================= TROUPE ================= */
 
@@ -326,21 +326,21 @@ let lossYou=Math.min(ratio*50,90);
 let lossEnemy=Math.min((1/ratio)*50,90);
 
 result.innerHTML=
-`<h3>Vous : ${Math.round(totalYou)}</h3>
-<h3>Ennemi : ${Math.round(totalEnemy)}</h3>
-<h3>Probabilité victoire : ${prob.toFixed(1)}%</h3>`;
+`<h3>TÚ : ${Math.round(totalYou)}</h3>
+<h3>Enemigo : ${Math.round(totalEnemy)}</h3>
+<h3>Probabilidad de victoria : ${prob.toFixed(1)}%</h3>`;
 
 losses.innerHTML=
-`<h3>Pertes estimées</h3>
-Vous ≈ ${lossYou.toFixed(1)}%<br>
-Ennemi ≈ ${lossEnemy.toFixed(1)}%`;
+`<h3>Pérdidas estimadas</h3>
+TÚ ≈ ${lossYou.toFixed(1)}%<br>
+Enemigo ≈ ${lossEnemy.toFixed(1)}%`;
 
 /* Charts */
 if(window.barChart)barChart.destroy();
 barChart=new Chart(powerChart,{
 type:"bar",
-data:{labels:["Vous","Ennemi"],
-datasets:[{label:"Puissance Totale",data:[totalYou,totalEnemy]}]}
+data:{labels:["TÚ","Enemigo"],
+datasets:[{label:"Potencia total",data:[totalYou,totalEnemy]}]}
 });
 
 if(window.pieY)pieY.destroy();
